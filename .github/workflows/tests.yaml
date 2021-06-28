@@ -1,4 +1,4 @@
-name: Run tests
+name: Tests and coverage
 
 on: [push, pull_request]
 
@@ -23,5 +23,5 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Test solidity
-      run: npm test
+    - name: Run tests and generate coverage report
+      run: npm run coverage
