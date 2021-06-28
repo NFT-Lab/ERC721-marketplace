@@ -29,7 +29,6 @@ describe("history test", function () {
       metadataCid: "metadataContentID",
     };
 
-
     await nftLabStore.mint(nft);
     const tokenID: BigNumberish = await nftLabStore.getTokenId(nft.cid);
 

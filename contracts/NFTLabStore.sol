@@ -92,7 +92,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
 
         _nfts[newTokenId] = nft;
         _hashToId[nft.cid] = newTokenId;
-        
+
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: newTokenId,
             seller: address(0),
