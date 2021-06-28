@@ -2,10 +2,11 @@
 pragma solidity >=0.5.8;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
+contract NFTLabStore is ERC721URIStorage, ERC721Enumerable, ERC721Burnable {
     struct NFTLab {
         string cid;
         string metadataCid;
@@ -74,10 +75,14 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     {
         require(_exists(tokenId), "Trying to burn a non existing token");
         ERC721URIStorage._burn(tokenId);
-        string memory hash = _nfts[tokenId].cid;
+        string memory cid = _nfts[tokenId].cid;
         delete _nfts[tokenId];
         delete _history[tokenId];
-        delete _hashToId[hash];
+        delete _hashToId[cid];
+    }
+
+    function burn(uint256 tokenId) public virtual override {
+        ERC721Burnable.burn(tokenId);
     }
 
     function mint(NFTLab memory nft) public {
