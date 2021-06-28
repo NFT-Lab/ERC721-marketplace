@@ -3,9 +3,9 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ContractFactory } from "@ethersproject/contracts";
 import { NFTLabStore } from "typechain";
-import { sign } from "crypto";
+import { BigNumberish } from "ethers";
 
-describe("NFTLabStore", function () {
+describe("minting test", function () {
   let nftLabStore: NFTLabStore;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;
@@ -32,6 +32,9 @@ describe("NFTLabStore", function () {
     await expect(nftLabStore.connect(signers[1]).mint(nft))
       .to.emit(nftLabStore, "Minted")
       .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+
+    const totalSupply: BigNumberish = await nftLabStore.totalSupply();
+    await expect(totalSupply).to.be.equal(1);
   });
 
   it("Should not let mint an already minted nft", async () => {

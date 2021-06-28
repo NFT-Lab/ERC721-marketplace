@@ -14,10 +14,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     struct NFTTransaction {
         uint256 tokenId;
         address seller;
-        uint256 sellerId;
         address buyer;
-        uint256 buyerId;
-        string price;
         string timestamp;
     }
 
@@ -33,8 +30,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         uint256 tokenId,
         address seller,
         address buyer,
-        string price,
-        string timestamp
+        uint256 timestamp
     );
 
     constructor(string memory name, string memory symbol)
@@ -76,9 +72,8 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         virtual
         override(ERC721, ERC721URIStorage)
     {
-        ERC721URIStorage._burn(tokenId);
-
         require(_exists(tokenId), "Trying to burn a non existing token");
+        ERC721URIStorage._burn(tokenId);
         string memory hash = _nfts[tokenId].cid;
         delete _nfts[tokenId];
         delete _history[tokenId];
@@ -92,7 +87,6 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
 
         uint256 newTokenId = _tokenIds.current();
 
-        _beforeTokenTransfer(address(0), msg.sender, newTokenId);
         _safeMint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, nft.cid);
 
@@ -102,28 +96,15 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         emit Minted(msg.sender, nft.cid, nft.metadataCid);
     }
 
-    function transfer(NFTTransaction memory transaction) public {
-        _beforeTokenTransfer(
-            transaction.seller,
-            transaction.buyer,
-            transaction.tokenId
-        );
-        safeTransferFrom(
-            transaction.seller,
-            transaction.buyer,
-            transaction.tokenId,
-            ""
-        );
+    function transfer(
+        address to,
+        uint256 tokenId
+    ) public {
+        safeTransferFrom(msg.sender, to, tokenId, "");
 
-        _history[transaction.tokenId].push(transaction);
+        _history[tokenId].push();
 
-        emit Transferred(
-            transaction.tokenId,
-            transaction.seller,
-            transaction.buyer,
-            transaction.price,
-            transaction.timestamp
-        );
+        emit Transferred(tokenId, msg.sender, to, block.timestamp);
     }
 
     function getHistory(uint256 tokenId)
