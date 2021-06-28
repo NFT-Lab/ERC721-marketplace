@@ -51,4 +51,21 @@ describe("minting test", function () {
       "Token already exists"
     );
   });
+
+  it("Should not let mint an already minted nft based only on CID", async () => {
+    let nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+    };
+
+    await expect(nftLabStore.connect(signers[1]).mint(nft))
+      .to.emit(nftLabStore, "Minted")
+      .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+
+    nft.metadataCid = "anotherMetadataContentID";
+
+    expect(nftLabStore.connect(signers[0]).mint(nft)).to.be.revertedWith(
+      "Token already exists"
+    );
+  });
 });

@@ -15,7 +15,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         uint256 tokenId;
         address seller;
         address buyer;
-        string timestamp;
+        uint256 timestamp;
     }
 
     using Counters for Counters.Counter;
@@ -92,17 +92,30 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
 
         _nfts[newTokenId] = nft;
         _hashToId[nft.cid] = newTokenId;
+        
+        NFTTransaction memory transaction = NFTTransaction({
+            tokenId: newTokenId,
+            seller: address(0),
+            buyer: msg.sender,
+            timestamp: block.timestamp
+        });
+
+        _history[newTokenId].push(transaction);
 
         emit Minted(msg.sender, nft.cid, nft.metadataCid);
     }
 
-    function transfer(
-        address to,
-        uint256 tokenId
-    ) public {
+    function transfer(address to, uint256 tokenId) public {
         safeTransferFrom(msg.sender, to, tokenId, "");
 
-        _history[tokenId].push();
+        NFTTransaction memory transaction = NFTTransaction({
+            tokenId: tokenId,
+            seller: msg.sender,
+            buyer: to,
+            timestamp: block.timestamp
+        });
+
+        _history[tokenId].push(transaction);
 
         emit Transferred(tokenId, msg.sender, to, block.timestamp);
     }
