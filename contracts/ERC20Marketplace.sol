@@ -28,14 +28,13 @@ contract NFTLabERC20Marketplace {
     }
 
     mapping(uint256 => Trade) private trades;
-    mapping(address => uint[]) private addressToTrades;
+    mapping(address => uint256[]) private addressToTrades;
     uint256[] maremma;
 
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
 
-    constructor(address _currencyTokenAddress, address _itemTokenAddress)
-    {
+    constructor(address _currencyTokenAddress, address _itemTokenAddress) {
         currencyToken = IERC20(_currencyTokenAddress);
         itemToken = IERC721(_itemTokenAddress);
     }

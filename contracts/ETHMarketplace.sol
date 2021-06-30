@@ -32,8 +32,7 @@ contract NFTLabETHMarketplace {
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
 
-    constructor(address _itemTokenAddress)
-    {
+    constructor(address _itemTokenAddress) {
         itemToken = IERC721(_itemTokenAddress);
     }
 

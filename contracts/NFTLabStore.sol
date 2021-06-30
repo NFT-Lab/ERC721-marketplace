@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
+contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     struct NFTLab {
         string cid;
         string metadataCid;
@@ -37,7 +37,11 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
         ERC721(name, symbol)
     {}
 
-    function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {}
+    function _burn(uint256 tokenId)
+        internal
+        virtual
+        override(ERC721, ERC721URIStorage)
+    {}
 
     function supportsInterface(bytes4 interfaceId)
         public
