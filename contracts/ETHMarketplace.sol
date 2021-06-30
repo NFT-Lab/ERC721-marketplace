@@ -95,7 +95,8 @@ contract ETHMarketplace {
     function executeTrade(uint256 _trade) public virtual {
         Trade memory trade = trades[_trade];
         require(trade.status == "Open", "Trade is not Open.");
-        payable(trade.poster).transfer(trade.price);
+        (bool sent, ) = payable(trade.poster).call{value: trade.price}("");
+        require(sent, "Failed to send eth");
         itemToken.transferFrom(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");

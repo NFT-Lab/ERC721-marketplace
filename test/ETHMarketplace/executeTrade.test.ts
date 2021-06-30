@@ -1,12 +1,16 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ContractFactory } from "ethers";
+import { BigNumber, ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 import { MockContract, smockit } from "@eth-optimism/smock";
 import { expect } from "chai";
-import { ETHMarketplace } from "typechain";
+import {
+  ETHMarketplace,
+  NFTLabStore,
+  NFTLabStoreMarketplaceVariant,
+} from "typechain";
 
-describe("ETHMarketplace tests", function () {
-  let mockedStore: MockContract;
+describe("ETHMarketplace tests - execute trade", function () {
+  let nftLabStore: NFTLabStoreMarketplaceVariant;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;
   let nftLabMarketplaceFactory: ContractFactory;
@@ -24,25 +28,39 @@ describe("ETHMarketplace tests", function () {
       signers[0]
     );
 
-    mockedStore = await smockit(nftLabStoreFactory);
+    nftLabStore = (await nftLabStoreFactory.deploy(
+      "NFTLabToken",
+      "NFTL"
+    )) as NFTLabStoreMarketplaceVariant;
 
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
-      mockedStore.address
+      nftLabStore.address
     )) as ETHMarketplace;
+
+    nftLabStore.mint(signers[1].address, {
+      cid: "cid",
+      metadataCid: "metadataCid",
+    });
+    nftLabStore.mint(signers[2].address, {
+      cid: "cid1",
+      metadataCid: "metadataCid",
+    });
+    nftLabStore.mint(signers[3].address, {
+      cid: "cid2",
+      metadataCid: "metadataCid",
+    });
+    nftLabStore.mint(signers[4].address, {
+      cid: "cid3",
+      metadataCid: "metadataCid",
+    });
+    console.log("minted 4 nfts");
   });
 
   it("Should execute an open trade", async () => {
-    nftLabMarketplace.openTrade(1, 1);
-    await expect(nftLabMarketplace.executeTrade(0)).to.emit(
+    nftLabMarketplace.connect(signers[1]).openTrade(1, 1000);
+    expect(await nftLabMarketplace.connect(signers[1]).executeTrade(0)).to.emit(
       nftLabMarketplace,
       "TradeStatusChange"
     );
-  });
-
-  it("Should not open a new trade if sender does not own the article", async () => {
-    nftLabMarketplace.openTrade(1, 10);
-    await expect(
-      nftLabMarketplace.connect(signers[1]).executeTrade(0)
-    ).to.be.revertedWith("");
   });
 });
