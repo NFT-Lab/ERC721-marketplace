@@ -39,7 +39,9 @@ describe("ETHMarketplace tests", function () {
   });
 
   it("Should not open a new trade if sender does not own the article", async () => {
-    mockedStore.smocked["safeTransferFrom(address,address,uint256)"].will.revert();
+    mockedStore.smocked[
+      "safeTransferFrom(address,address,uint256)"
+    ].will.revert();
     await expect(nftLabMarketplace.openTrade(1, 1)).to.be.revertedWith("");
   });
 });
