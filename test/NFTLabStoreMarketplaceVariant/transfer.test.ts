@@ -22,7 +22,7 @@ describe("Marketplace variant - Transfer tests", function () {
     )) as NFTLabStoreMarketplaceVariant;
   });
 
-  it("Only owner should be able to transfer a NFT", async () => {
+  it("Only owner should be able to safeTransferFrom a NFT", async () => {
     const signers = await ethers.getSigners();
 
     const nft = {
@@ -47,11 +47,11 @@ describe("Marketplace variant - Transfer tests", function () {
     );
 
     await expect(
-      notOwnerCaller.transfer(
+      notOwnerCaller.safeTransferFrom(
         transaction.seller,
         transaction.buyer,
         transaction.tokenId
       )
-    ).to.be.revertedWith("ERC721: transfer of token that is not own");
+    ).to.be.revertedWith("ERC721: safeTransferFrom of token that is not own");
   });
 });

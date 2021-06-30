@@ -103,12 +103,12 @@ contract NFTLabStoreMarketplaceVariant is
         emit Minted(to, nft.cid, nft.metadataCid);
     }
 
-    function transfer(
+    function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId
-    ) public {
-        safeTransferFrom(from, to, tokenId, "");
+    ) public override {
+        super.safeTransferFrom(from, to, tokenId, "");
 
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: tokenId,

@@ -34,7 +34,11 @@ describe("history test", function () {
 
     expect((await nftLabStore.getHistory(tokenID)).length).to.be.equal(1);
 
-    await nftLabStore.transfer(signers[1].address, tokenID);
+    await nftLabStore.safeTransferFrom(
+      signers[0].address,
+      signers[1].address,
+      tokenID
+    );
 
     expect((await nftLabStore.getHistory(tokenID)).length).to.be.equal(2);
   });

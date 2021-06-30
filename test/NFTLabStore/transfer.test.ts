@@ -22,7 +22,7 @@ describe("Transfer tests", function () {
     )) as NFTLabStore;
   });
 
-  it("Only owner should be able to transfer a NFT", async () => {
+  it("Only owner should be able to safeTransferFrom a NFT", async () => {
     const signers = await ethers.getSigners();
 
     const nft = {
@@ -45,7 +45,9 @@ describe("Transfer tests", function () {
     const notOwnerCaller: NFTLabStore = nftLabStore.connect(signers[1]);
 
     await expect(
-      notOwnerCaller.transfer(transaction.buyer, transaction.tokenId)
-    ).to.be.revertedWith("ERC721: transfer caller is not owner nor approved");
+      notOwnerCaller.safeTransferFrom(transaction.buyer, transaction.tokenId)
+    ).to.be.revertedWith(
+      "ERC721: safeTransferFrom caller is not owner nor approved"
+    );
   });
 });

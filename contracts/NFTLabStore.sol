@@ -98,8 +98,12 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         emit Minted(msg.sender, nft.cid, nft.metadataCid);
     }
 
-    function transfer(address to, uint256 tokenId) public {
-        safeTransferFrom(msg.sender, to, tokenId, "");
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override {
+        super.safeTransferFrom(from, to, tokenId);
 
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: tokenId,

@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract NFTLabETHMarketplace {
+contract ETHMarketplace {
     event TradeStatusChange(uint256 ad, bytes32 status);
 
     IERC721 itemToken;
@@ -74,7 +74,7 @@ contract NFTLabETHMarketplace {
      * @param _price The amount of currency for which to trade the item.
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
-        itemToken.transferFrom(msg.sender, address(this), _item);
+        itemToken.safeTransferFrom(msg.sender, address(this), _item);
         Trade memory newTrade = Trade({
             poster: msg.sender,
             item: _item,
