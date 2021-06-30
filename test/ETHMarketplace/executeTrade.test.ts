@@ -1,13 +1,8 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { BigNumber, ContractFactory } from "ethers";
+import { ContractFactory } from "ethers";
 import { ethers } from "hardhat";
-import { MockContract, smockit } from "@eth-optimism/smock";
 import { expect } from "chai";
-import {
-  ETHMarketplace,
-  NFTLabStore,
-  NFTLabStoreMarketplaceVariant,
-} from "typechain";
+import { ETHMarketplace, NFTLabStoreMarketplaceVariant } from "typechain";
 
 describe("ETHMarketplace tests - execute trade", function () {
   let nftLabStore: NFTLabStoreMarketplaceVariant;

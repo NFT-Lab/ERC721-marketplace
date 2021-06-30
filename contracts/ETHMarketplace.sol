@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 /**
  * @title NFTLabMarketplace
@@ -14,10 +15,11 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract ETHMarketplace {
+contract ETHMarketplace is IERC721Enumerable {
     event TradeStatusChange(uint256 id, bytes32 status);
 
     IERC721 itemToken;
+    IERC721Enumerable itemTokenEnumeration;
 
     struct Trade {
         address poster;
@@ -34,6 +36,7 @@ contract ETHMarketplace {
 
     constructor(address _itemTokenAddress) {
         itemToken = IERC721(_itemTokenAddress);
+        itemTokenEnumeration = IERC721Enumerable(_itemTokenAddress);
     }
 
     /**
@@ -116,5 +119,27 @@ contract ETHMarketplace {
         itemToken.transferFrom(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
+    }
+
+    function totalSupply() external view override returns (uint256) {
+        return itemTokenEnumeration.totalSupply();
+    }
+
+    function tokenOfOwnerByIndex(address owner, uint256 index)
+        external
+        view
+        override
+        returns (uint256 tokenId)
+    {
+        return itemTokenEnumeration.tokenOfOwnerByIndex(owner, index);
+    }
+
+    function tokenByIndex(uint256 index)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return itemTokenEnumeration.tokenByIndex(index);
     }
 }
