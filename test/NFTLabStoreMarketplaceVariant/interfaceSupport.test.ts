@@ -5,7 +5,7 @@ import { ContractFactory } from "@ethersproject/contracts";
 import { NFTLabStoreMarketplaceVariant } from "typechain";
 import { BigNumberish } from "ethers";
 
-describe("baseURI test", function () {
+describe("NFTLabStoreMarketplace - baseURI test", function () {
   let nftLabStore: NFTLabStoreMarketplaceVariant;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;

@@ -5,7 +5,7 @@ import { ContractFactory } from "@ethersproject/contracts";
 import { NFTLabStore } from "typechain";
 import { BigNumberish } from "ethers";
 
-describe("token getters", function () {
+describe("NFTLabStore - token getters", function () {
   let nftLabStore: NFTLabStore;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;

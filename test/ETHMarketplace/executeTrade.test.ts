@@ -5,7 +5,7 @@ import { MockContract, smockit } from "@eth-optimism/smock";
 import { expect } from "chai";
 import { ETHMarketplace } from "typechain";
 
-describe("ETHMarketplace - openTrade tests", function () {
+describe("ETHMarketplace tests", function () {
   let mockedStore: MockContract;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;
@@ -31,17 +31,18 @@ describe("ETHMarketplace - openTrade tests", function () {
     )) as ETHMarketplace;
   });
 
-  it("Should open a new trade", async () => {
-    await expect(nftLabMarketplace.openTrade(1, 1)).to.emit(
+  it("Should execute an open trade", async () => {
+    nftLabMarketplace.openTrade(1, 1);
+    await expect(nftLabMarketplace.executeTrade(0)).to.emit(
       nftLabMarketplace,
       "TradeStatusChange"
     );
   });
 
   it("Should not open a new trade if sender does not own the article", async () => {
-    mockedStore.smocked[
-      "safeTransferFrom(address,address,uint256)"
-    ].will.revert();
-    await expect(nftLabMarketplace.openTrade(1, 1)).to.be.revertedWith("");
+    nftLabMarketplace.openTrade(1, 10);
+    await expect(
+      nftLabMarketplace.connect(signers[1]).executeTrade(0)
+    ).to.be.revertedWith("");
   });
 });

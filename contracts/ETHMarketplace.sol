@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * which should encode any item details.
  */
 contract ETHMarketplace {
-    event TradeStatusChange(uint256 ad, bytes32 status);
+    event TradeStatusChange(uint256 id, bytes32 status);
 
     IERC721 itemToken;
 
@@ -75,13 +75,12 @@ contract ETHMarketplace {
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
         itemToken.safeTransferFrom(msg.sender, address(this), _item);
-        Trade memory newTrade = Trade({
+        trades[tradeCounter.current()] = Trade({
             poster: msg.sender,
             item: _item,
             price: _price,
             status: "Open"
         });
-        trades[tradeCounter.current()] = newTrade;
         addressToTrades[msg.sender].push(tradeCounter.current());
         tradeCounter.increment();
         emit TradeStatusChange(tradeCounter.current() - 1, "Open");

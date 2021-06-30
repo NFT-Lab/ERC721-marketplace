@@ -4,7 +4,7 @@ import { ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 import { NFTLabStoreMarketplaceVariant } from "typechain";
 
-describe("Marketplace variant - Transfer tests", function () {
+describe("NFTLabStoreMarketplace - Transfer tests", function () {
   let nftLabStore: NFTLabStoreMarketplaceVariant;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;
