@@ -6,7 +6,11 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTLabStore is ERC721URIStorage, ERC721Enumerable, Ownable {
+contract NFTLabStoreMarketplaceVariant is
+    ERC721URIStorage,
+    ERC721Enumerable,
+    Ownable
+{
     struct NFTLab {
         string cid;
         string metadataCid;
