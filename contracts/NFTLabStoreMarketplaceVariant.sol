@@ -4,8 +4,9 @@ pragma solidity >=0.5.8;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
+contract NFTLabStore is ERC721URIStorage, ERC721Enumerable, Ownable {
     struct NFTLab {
         string cid;
         string metadataCid;
@@ -37,8 +38,6 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
         ERC721(name, symbol)
     {}
 
-    function _burn(uint256 tokenId) internal virtual override(ERC721, ERC721URIStorage) {}
-
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -69,14 +68,20 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
         return ERC721URIStorage.tokenURI(tokenId);
     }
 
-    function mint(NFTLab memory nft) public {
+    function _burn(uint256 tokenId)
+        internal
+        virtual
+        override(ERC721, ERC721URIStorage)
+    {}
+
+    function mint(address to, NFTLab memory nft) public onlyOwner {
         require(_hashToId[nft.cid] == 0, "Token already exists");
 
         _tokenIds.increment();
 
         uint256 newTokenId = _tokenIds.current();
 
-        _safeMint(msg.sender, newTokenId);
+        _safeMint(to, newTokenId);
         _setTokenURI(newTokenId, nft.cid);
 
         _nfts[newTokenId] = nft;
@@ -85,28 +90,28 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable{
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: newTokenId,
             seller: address(0),
-            buyer: msg.sender,
+            buyer: to,
             timestamp: block.timestamp
         });
 
         _history[newTokenId].push(transaction);
 
-        emit Minted(msg.sender, nft.cid, nft.metadataCid);
+        emit Minted(to, nft.cid, nft.metadataCid);
     }
 
-    function transfer(address to, uint256 tokenId) public {
-        safeTransferFrom(msg.sender, to, tokenId, "");
+    function transfer(address from, address to, uint256 tokenId) public {
+        safeTransferFrom(from, to, tokenId, "");
 
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: tokenId,
-            seller: msg.sender,
+            seller: from,
             buyer: to,
             timestamp: block.timestamp
         });
 
         _history[tokenId].push(transaction);
 
-        emit Transferred(tokenId, msg.sender, to, block.timestamp);
+        emit Transferred(tokenId, from, to, block.timestamp);
     }
 
     function getHistory(uint256 tokenId)
