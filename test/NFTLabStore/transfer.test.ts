@@ -45,9 +45,11 @@ describe("Transfer tests", function () {
     const notOwnerCaller: NFTLabStore = nftLabStore.connect(signers[1]);
 
     await expect(
-      notOwnerCaller.safeTransferFrom(transaction.buyer, transaction.tokenId)
-    ).to.be.revertedWith(
-      "ERC721: safeTransferFrom caller is not owner nor approved"
-    );
+      notOwnerCaller["safeTransferFrom(address,address,uint256)"](
+        transaction.seller,
+        transaction.buyer,
+        transaction.tokenId
+      )
+    ).to.be.revertedWith("");
   });
 });
