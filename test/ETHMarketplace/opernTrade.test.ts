@@ -24,14 +24,17 @@ describe("ETHMarketplace - openTrade tests", function () {
   });
 
   it("Should open a new trade", async () => {
-    const tokenID = nftLabMarketplace.mint(signers[1].address, {
+    nftLabMarketplace.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
     });
-    await expect(nftLabMarketplace.openTrade(1, 1)).to.emit(
-      nftLabMarketplace,
-      "TradeStatusChange"
+    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
     );
+    expect(
+      await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1)
+    ).to.emit(nftLabMarketplace, "TradeStatusChange");
   });
 
   it("Should not open a new trade if sender does not own the article", async () => {
