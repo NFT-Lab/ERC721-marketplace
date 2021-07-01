@@ -6,11 +6,10 @@ import { expect } from "chai";
 import { ETHMarketplace } from "typechain";
 
 describe("ETHMarketplace tests", function () {
-  let mockedStore: MockContract;
   let signers: SignerWithAddress[];
-  let nftLabStoreFactory: ContractFactory;
   let nftLabMarketplaceFactory: ContractFactory;
   let nftLabMarketplace: ETHMarketplace;
+  let NFT = { cid: "cid", metadataCid: "metadataCid" };
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
@@ -20,22 +19,33 @@ describe("ETHMarketplace tests", function () {
     );
 
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
-      mockedStore.address
+      "NFTlabToken",
+      "NFTL"
     )) as ETHMarketplace;
   });
 
   it("Should close an open trade", async () => {
-    nftLabMarketplace.connect(signers[0]).openTrade(1, 1);
-    await expect(nftLabMarketplace.connect(signers[0]).cancelTrade(0)).to.emit(
+    nftLabMarketplace.mint(signers[1].address, NFT);
+    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+    nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
+    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(0)).to.emit(
       nftLabMarketplace,
       "TradeStatusChange"
     );
   });
 
   it("Only poster should be able to close", async () => {
-    nftLabMarketplace.connect(signers[0]).openTrade(1, 1);
+    nftLabMarketplace.mint(signers[1].address, NFT);
+    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+    nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
     await expect(
-      nftLabMarketplace.connect(signers[1]).cancelTrade(0)
+      nftLabMarketplace.connect(signers[2]).cancelTrade(0)
     ).to.be.revertedWith("");
   });
 });
