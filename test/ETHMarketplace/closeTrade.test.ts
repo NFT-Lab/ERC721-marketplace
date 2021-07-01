@@ -24,20 +24,19 @@ describe("ETHMarketplace tests", function () {
     )) as ETHMarketplace;
   });
 
-  it("Should close an open trade", async () => {
+  it("Should cancel an open trade", async () => {
     nftLabMarketplace.mint(signers[1].address, NFT);
     const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
       signers[1].address,
       0
     );
     nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
-    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(0)).to.emit(
-      nftLabMarketplace,
-      "TradeStatusChange"
-    );
+    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(0))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(0, "Cancelled");
   });
 
-  it("Only poster should be able to close", async () => {
+  it("Only poster should be able to cancel", async () => {
     nftLabMarketplace.mint(signers[1].address, NFT);
     const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
       signers[1].address,

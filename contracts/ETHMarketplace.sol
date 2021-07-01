@@ -15,7 +15,7 @@ import "./NFTLabStoreMarketplaceVariant.sol";
  * which should encode any item details.
  */
 contract ETHMarketplace {
-    event TradeStatusChange(uint256 id, bytes32 status);
+    event TradeStatusChange(uint256 id, string status);
 
     NFTLabStoreMarketplaceVariant tokenHandler;
 

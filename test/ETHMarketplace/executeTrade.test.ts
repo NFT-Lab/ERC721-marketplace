@@ -37,10 +37,9 @@ describe("ETHMarketplace tests - execute trade", function () {
     console.log(tokenID);
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1000))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0);
-    expect(await nftLabMarketplace.connect(signers[1]).executeTrade(0)).to.emit(
-      nftLabMarketplace,
-      "TradeStatusChange"
-    );
+      .withArgs(0, "Open");
+    expect(await nftLabMarketplace.connect(signers[1]).executeTrade(0))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(0, "Executed");
   });
 });
