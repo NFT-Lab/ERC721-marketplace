@@ -52,6 +52,6 @@ describe("NFTLabStoreMarketplace - Transfer tests", function () {
         transaction.buyer,
         transaction.tokenId
       )
-    ).to.be.revertedWith("ERC721: transfer of token that is not own");
+    ).to.be.revertedWith("Ownable: caller is not the owner");
   });
 });

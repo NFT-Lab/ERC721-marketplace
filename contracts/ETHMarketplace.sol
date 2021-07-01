@@ -4,8 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "./NFTLabStoreMarketplaceVariant.sol";
 
 /**
  * @title NFTLabMarketplace
@@ -15,11 +14,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract ETHMarketplace is IERC721Enumerable {
+contract ETHMarketplace {
     event TradeStatusChange(uint256 id, bytes32 status);
 
-    IERC721 itemToken;
-    IERC721Enumerable itemTokenEnumeration;
+    NFTLabStoreMarketplaceVariant tokenHandler;
 
     struct Trade {
         address poster;
@@ -34,9 +32,8 @@ contract ETHMarketplace is IERC721Enumerable {
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
 
-    constructor(address _itemTokenAddress) {
-        itemToken = IERC721(_itemTokenAddress);
-        itemTokenEnumeration = IERC721Enumerable(_itemTokenAddress);
+    constructor(string memory _name, string memory _symbol) {
+        tokenHandler = new NFTLabStoreMarketplaceVariant(_name, _symbol);
     }
 
     /**
@@ -77,7 +74,7 @@ contract ETHMarketplace is IERC721Enumerable {
      * @param _price The amount of currency for which to trade the item.
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
-        itemToken.safeTransferFrom(msg.sender, address(this), _item);
+        tokenHandler.safeTransferFrom(msg.sender, address(this), _item);
         trades[tradeCounter.current()] = Trade({
             poster: msg.sender,
             item: _item,
@@ -100,7 +97,7 @@ contract ETHMarketplace is IERC721Enumerable {
         require(trade.status == "Open", "Trade is not Open.");
         (bool sent, ) = payable(trade.poster).call{value: trade.price}("");
         require(sent, "Failed to send eth");
-        itemToken.transferFrom(address(this), msg.sender, trade.item);
+        tokenHandler.transferFrom(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
@@ -116,30 +113,30 @@ contract ETHMarketplace is IERC721Enumerable {
             "Trade can be cancelled only by poster."
         );
         require(trade.status == "Open", "Trade is not Open.");
-        itemToken.transferFrom(address(this), trade.poster, trade.item);
+        tokenHandler.transferFrom(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
     }
 
-    function totalSupply() external view override returns (uint256) {
-        return itemTokenEnumeration.totalSupply();
+    function totalSupply() external view returns (uint256) {
+        return tokenHandler.totalSupply();
     }
 
     function tokenOfOwnerByIndex(address owner, uint256 index)
         external
         view
-        override
         returns (uint256 tokenId)
     {
-        return itemTokenEnumeration.tokenOfOwnerByIndex(owner, index);
+        return tokenHandler.tokenOfOwnerByIndex(owner, index);
     }
 
-    function tokenByIndex(uint256 index)
-        external
-        view
-        override
-        returns (uint256)
+    function tokenByIndex(uint256 index) external view returns (uint256) {
+        return tokenHandler.tokenByIndex(index);
+    }
+
+    function mint(address to, NFTLabStoreMarketplaceVariant.NFTLab memory nft)
+        public
     {
-        return itemTokenEnumeration.tokenByIndex(index);
+        tokenHandler.mint(to, nft);
     }
 }

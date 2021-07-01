@@ -6,32 +6,28 @@ import { expect } from "chai";
 import { ETHMarketplace } from "typechain";
 
 describe("ETHMarketplace - openTrade tests", function () {
-  let mockedStore: MockContract;
   let signers: SignerWithAddress[];
-  let nftLabStoreFactory: ContractFactory;
   let nftLabMarketplaceFactory: ContractFactory;
   let nftLabMarketplace: ETHMarketplace;
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
-    nftLabStoreFactory = await ethers.getContractFactory(
-      "NFTLabStore",
-      signers[0]
-    );
-
     nftLabMarketplaceFactory = await ethers.getContractFactory(
       "ETHMarketplace",
       signers[0]
     );
 
-    mockedStore = await smockit(nftLabStoreFactory);
-
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
-      mockedStore.address
+      "NFTLab",
+      "NFTL"
     )) as ETHMarketplace;
   });
 
   it("Should open a new trade", async () => {
+    const tokenID = nftLabMarketplace.mint(signers[1].address, {
+      cid: "cid",
+      metadataCid: "metadataCid",
+    });
     await expect(nftLabMarketplace.openTrade(1, 1)).to.emit(
       nftLabMarketplace,
       "TradeStatusChange"
@@ -39,9 +35,6 @@ describe("ETHMarketplace - openTrade tests", function () {
   });
 
   it("Should not open a new trade if sender does not own the article", async () => {
-    mockedStore.smocked[
-      "safeTransferFrom(address,address,uint256)"
-    ].will.revert();
     await expect(nftLabMarketplace.openTrade(1, 1)).to.be.revertedWith("");
   });
 });

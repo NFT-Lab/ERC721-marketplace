@@ -107,8 +107,8 @@ contract NFTLabStoreMarketplaceVariant is
         address from,
         address to,
         uint256 tokenId
-    ) public override {
-        super.safeTransferFrom(from, to, tokenId, "");
+    ) public override onlyOwner {
+        super._transfer(from, to, tokenId);
 
         NFTTransaction memory transaction = NFTTransaction({
             tokenId: tokenId,

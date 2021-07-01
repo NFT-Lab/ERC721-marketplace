@@ -14,17 +14,10 @@ describe("ETHMarketplace tests", function () {
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
-    nftLabStoreFactory = await ethers.getContractFactory(
-      "NFTLabStore",
-      signers[0]
-    );
-
     nftLabMarketplaceFactory = await ethers.getContractFactory(
       "ETHMarketplace",
       signers[0]
     );
-
-    mockedStore = await smockit(nftLabStoreFactory);
 
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
       mockedStore.address
