@@ -98,7 +98,7 @@ contract ETHMarketplace is Ownable {
             msg.value >= trade.price,
             "You should pay the price of the token to get it"
         );
-        require(trade.status == "Open", "Trade is not Open.");
+        require(trade.status == "Open", "Trade is not open");
         uint256 tip = msg.value - trade.price;
         (bool sent, ) = trade.poster.call{value: trade.price}("");
         require(sent, "Failed to send eth to pay the art");
@@ -121,7 +121,7 @@ contract ETHMarketplace is Ownable {
             msg.sender == trade.poster,
             "Trade can be cancelled only by poster."
         );
-        require(trade.status == "Open", "Trade is not Open.");
+        require(trade.status == "Open", "Trade is not open");
         tokenHandler.safeTransferFrom(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
