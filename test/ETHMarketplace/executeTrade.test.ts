@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 import { ETHMarketplace, NFTLabStoreMarketplaceVariant } from "typechain";
 
-describe("ETHMarketplace tests - execute trade", function () {
+describe("ETHMarketplace - execute trade", function () {
   let nftLabStore: NFTLabStoreMarketplaceVariant;
   let signers: SignerWithAddress[];
   let nftLabStoreFactory: ContractFactory;
@@ -30,15 +30,16 @@ describe("ETHMarketplace tests - execute trade", function () {
       cid: "cid",
       metadataCid: "metadataCid",
     });
-    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
-      signers[1].address,
-      0
-    );
-    console.log(tokenID);
-    expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1000))
+
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(0, "Open");
-    expect(await nftLabMarketplace.connect(signers[1]).executeTrade(0))
+
+    expect(
+      await nftLabMarketplace
+        .connect(signers[2])
+        .executeTrade(0, { value: ethers.utils.parseEther("1") })
+    )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(0, "Executed");
   });

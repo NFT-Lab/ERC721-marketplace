@@ -14,13 +14,13 @@ import "./NFTLabStoreMarketplaceVariant.sol";
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract ETHMarketplace {
+contract ETHMarketplace is Ownable {
     event TradeStatusChange(uint256 id, string status);
 
     NFTLabStoreMarketplaceVariant tokenHandler;
 
     struct Trade {
-        address poster;
+        address payable poster;
         uint256 item;
         uint256 price;
         bytes32 status; // Open, Executed, Cancelled
@@ -76,7 +76,7 @@ contract ETHMarketplace {
     function openTrade(uint256 _item, uint256 _price) public virtual {
         tokenHandler.safeTransferFrom(msg.sender, address(this), _item);
         trades[tradeCounter.current()] = Trade({
-            poster: msg.sender,
+            poster: payable(msg.sender),
             item: _item,
             price: _price,
             status: "Open"
@@ -92,12 +92,21 @@ contract ETHMarketplace {
      * item to the filler.
      * @param _trade The id of an existing trade
      */
-    function executeTrade(uint256 _trade) public virtual {
+    function executeTrade(uint256 _trade) public payable virtual {
         Trade memory trade = trades[_trade];
+        require(
+            msg.value >= trade.price,
+            "You should pay the price of the token to get it"
+        );
         require(trade.status == "Open", "Trade is not Open.");
-        (bool sent, ) = payable(trade.poster).call{value: trade.price}("");
-        require(sent, "Failed to send eth");
-        tokenHandler.transferFrom(address(this), msg.sender, trade.item);
+        uint256 tip = msg.value - trade.price;
+        (bool sent, ) = trade.poster.call{value: trade.price}("");
+        require(sent, "Failed to send eth to pay the art");
+        if (tip > 0) {
+            (bool owner_sent, ) = owner().call{value: trade.price}("");
+            require(owner_sent, "Failed to send eth to the owner");
+        }
+        tokenHandler.safeTransferFrom(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
@@ -113,7 +122,7 @@ contract ETHMarketplace {
             "Trade can be cancelled only by poster."
         );
         require(trade.status == "Open", "Trade is not Open.");
-        tokenHandler.transferFrom(address(this), trade.poster, trade.item);
+        tokenHandler.safeTransferFrom(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
     }
