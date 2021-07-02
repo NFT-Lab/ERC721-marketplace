@@ -24,10 +24,7 @@ const config: HardhatUserConfig = {
         }
       }
     },
-  },
-  typechain: {
-    alwaysGenerateOverloads: true,
-  },
+  }
 };
 
 export default config;

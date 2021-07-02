@@ -35,7 +35,7 @@ describe("ETHMarketplace tests", function () {
   });
 
   it("Get a non empty address of storage", async () => {
-    const address = await nftLabMarketplace["getStorage()"]();
+    const address = await nftLabMarketplace.getStorage();
     expect(address).to.have.length.greaterThanOrEqual(1);
   });
 });
