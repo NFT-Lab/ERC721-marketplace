@@ -29,7 +29,7 @@ describe("NFTLabStore - baseURI test", function () {
       metadataCid: "metadataContentID",
     };
 
-    await nftLabStore.mint(nft);
+    await nftLabStore.mint(signers[0].address, nft);
 
     const tokenID: BigNumberish = await nftLabStore.getTokenId(nft.cid);
     const tokenURI: string = await nftLabStore.tokenURI(tokenID);

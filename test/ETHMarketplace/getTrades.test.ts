@@ -3,12 +3,15 @@ import { ContractFactory } from "ethers";
 import { ethers } from "hardhat";
 import { MockContract, smockit } from "@eth-optimism/smock";
 import { expect } from "chai";
-import { ETHMarketplace } from "typechain";
+import { ETHMarketplace, NFTLabStoreMarketplaceVariant } from "typechain";
 
 describe("ETHMarketplace - get trades", function () {
   let signers: SignerWithAddress[];
   let nftLabMarketplaceFactory: ContractFactory;
   let nftLabMarketplace: ETHMarketplace;
+  let nftLabStore: NFTLabStoreMarketplaceVariant;
+  let nftLabStoreFactory: ContractFactory;
+  let NFT = { cid: "cid", metadataCid: "metadataCid" };
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
@@ -17,18 +20,24 @@ describe("ETHMarketplace - get trades", function () {
       signers[0]
     );
 
+    nftLabStoreFactory = await ethers.getContractFactory(
+      "NFTLabStoreMarketplaceVariant",
+      signers[0]
+    );
+
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
-      "NFTLab",
+      "NFTlabToken",
       "NFTL"
     )) as ETHMarketplace;
+
+    nftLabStore = (await nftLabStoreFactory.attach(
+      await nftLabMarketplace.getStorage()
+    )) as NFTLabStoreMarketplaceVariant;
   });
 
   it("Should get all the trades", async () => {
-    nftLabMarketplace.mint(signers[1].address, {
-      cid: "cid",
-      metadataCid: "metadataCid",
-    });
-    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
       signers[1].address,
       0
     );
@@ -44,11 +53,8 @@ describe("ETHMarketplace - get trades", function () {
   });
 
   it("Should get all the trades", async () => {
-    nftLabMarketplace.mint(signers[1].address, {
-      cid: "cid",
-      metadataCid: "metadataCid",
-    });
-    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
       signers[1].address,
       0
     );

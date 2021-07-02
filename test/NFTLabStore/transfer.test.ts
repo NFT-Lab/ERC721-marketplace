@@ -40,7 +40,7 @@ describe("NFTLabStore - Transfer tests", function () {
       timestamp: "2021",
     };
 
-    await nftLabStore.mint(nft);
+    await nftLabStore.mint(signers[0].address, nft);
 
     const notOwnerCaller: NFTLabStore = nftLabStore.connect(signers[1]);
 

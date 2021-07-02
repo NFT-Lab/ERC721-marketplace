@@ -43,6 +43,10 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         override(ERC721, ERC721URIStorage)
     {}
 
+    /**
+     * @dev redirect to {ERC721Enumerable-supportsInterface} and
+     * {ERC721URIStorage-supportsInterface}
+     */
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -55,6 +59,9 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
             ERC721.supportsInterface(interfaceId);
     }
 
+    /**
+     * @dev redirect to {ERC721Enumerable-_beforeTokenTransfer}
+     */
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -63,6 +70,9 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         ERC721Enumerable._beforeTokenTransfer(from, to, tokenId);
     }
 
+    /**
+     * @dev redirect to {ERC721URIStorage-tokenURI}
+     */
     function tokenURI(uint256 tokenId)
         public
         view
@@ -73,31 +83,48 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         return ERC721URIStorage.tokenURI(tokenId);
     }
 
-    function mint(NFTLab memory nft) public {
+    function _recordHistory(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual {
+        NFTTransaction memory transaction = NFTTransaction({
+            tokenId: tokenId,
+            seller: from,
+            buyer: to,
+            timestamp: block.timestamp
+        });
+
+        _history[tokenId].push(transaction);
+    }
+
+    /**
+     * @dev mints an NFT out of thin air for the msg.sender, the msg
+     * sender is now the owner of that NFT .
+     * @param nft the struct describing the NFT, See
+     * {xref-NFTLabStore-NFTLab} for reference
+     */
+    function mint(address to, NFTLab memory nft) public {
         require(_hashToId[nft.cid] == 0, "Token already exists");
 
         _tokenIds.increment();
 
         uint256 newTokenId = _tokenIds.current();
 
-        _safeMint(msg.sender, newTokenId);
+        _safeMint(to, newTokenId);
         _setTokenURI(newTokenId, nft.cid);
 
         _nfts[newTokenId] = nft;
         _hashToId[nft.cid] = newTokenId;
 
-        NFTTransaction memory transaction = NFTTransaction({
-            tokenId: newTokenId,
-            seller: address(0),
-            buyer: msg.sender,
-            timestamp: block.timestamp
-        });
+        _recordHistory(address(0), to, newTokenId);
 
-        _history[newTokenId].push(transaction);
-
-        emit Minted(msg.sender, nft.cid, nft.metadataCid);
+        emit Minted(to, nft.cid, nft.metadataCid);
     }
 
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
     function safeTransferFrom(
         address from,
         address to,
@@ -105,18 +132,16 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     ) public override {
         super.safeTransferFrom(from, to, tokenId);
 
-        NFTTransaction memory transaction = NFTTransaction({
-            tokenId: tokenId,
-            seller: msg.sender,
-            buyer: to,
-            timestamp: block.timestamp
-        });
+        _recordHistory(from, to, tokenId);
 
-        _history[tokenId].push(transaction);
-
-        emit Transferred(tokenId, msg.sender, to, block.timestamp);
+        emit Transferred(tokenId, from, to, block.timestamp);
     }
 
+    /**
+     * @dev returns the history of an NFT, so all the transactions he
+     * went trough
+     * @param tokenId the tokenId of wich you want the history
+     */
     function getHistory(uint256 tokenId)
         public
         view
@@ -130,30 +155,48 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         return _history[tokenId];
     }
 
-    function getTokenId(string memory hash) public view returns (uint256) {
+    /**
+     * @dev returns the tokenId of an NFT with the provided cid,
+     * reverts if no NFT has that cid
+     * @param cid the ipfs content id of the NFT
+     */
+    function getTokenId(string memory cid) public view returns (uint256) {
         require(
-            _hashToId[hash] != 0,
+            _hashToId[cid] != 0,
             "Unable to get the ID of a non-existent NFT."
         );
-        return _hashToId[hash];
+        return _hashToId[cid];
     }
 
-    function getNFTByHash(string memory hash)
+    /**
+     * @dev returns the whole NFT with the provided cid reverts if no
+     * NFT has that cid
+     * @param cid the ipfs content id of the NFT
+     */
+    function getNFTByHash(string memory cid)
         public
         view
         returns (NFTLab memory)
     {
-        require(_hashToId[hash] != 0, "Unable to get a non-existent NFT.");
+        require(_hashToId[cid] != 0, "Unable to get a non-existent NFT.");
 
-        return _nfts[_hashToId[hash]];
+        return _nfts[_hashToId[cid]];
     }
 
+    /**
+     * @dev returns the whole NFT with the provided id reverts if no
+     * NFT has that id
+     * @param id the tokenId of the NFT
+     */
     function getNFTById(uint256 id) public view returns (NFTLab memory) {
         require(_exists(id), "Unable to get a non-existent NFT.");
 
         return _nfts[id];
     }
 
+    /**
+     * @dev the base uri of nfts, gives access directly to ipfs
+     */
     function _baseURI() internal pure override returns (string memory) {
         return "https://cloudflare-ipfs.com/ipfs/";
     }

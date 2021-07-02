@@ -1,14 +1,15 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ContractFactory } from "ethers";
 import { ethers } from "hardhat";
-import { MockContract, smockit } from "@eth-optimism/smock";
 import { expect } from "chai";
-import { ETHMarketplace } from "typechain";
+import { ETHMarketplace, NFTLabStoreMarketplaceVariant } from "typechain";
 
 describe("ETHMarketplace tests", function () {
   let signers: SignerWithAddress[];
   let nftLabMarketplaceFactory: ContractFactory;
   let nftLabMarketplace: ETHMarketplace;
+  let nftLabStore: NFTLabStoreMarketplaceVariant;
+  let nftLabStoreFactory: ContractFactory;
   let NFT = { cid: "cid", metadataCid: "metadataCid" };
 
   beforeEach(async () => {
@@ -18,15 +19,24 @@ describe("ETHMarketplace tests", function () {
       signers[0]
     );
 
+    nftLabStoreFactory = await ethers.getContractFactory(
+      "NFTLabStoreMarketplaceVariant",
+      signers[0]
+    );
+
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
       "NFTlabToken",
       "NFTL"
     )) as ETHMarketplace;
+
+    nftLabStore = (await nftLabStoreFactory.attach(
+      await nftLabMarketplace.getStorage()
+    )) as NFTLabStoreMarketplaceVariant;
   });
 
   it("Should cancel an open trade", async () => {
-    nftLabMarketplace.mint(signers[1].address, NFT);
-    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
       signers[1].address,
       0
     );
@@ -37,8 +47,8 @@ describe("ETHMarketplace tests", function () {
   });
 
   it("Only poster should be able to cancel", async () => {
-    nftLabMarketplace.mint(signers[1].address, NFT);
-    const tokenID = await nftLabMarketplace.tokenOfOwnerByIndex(
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
       signers[1].address,
       0
     );

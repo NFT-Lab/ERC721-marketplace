@@ -74,7 +74,7 @@ contract ETHMarketplace is Ownable {
      * @param _price The amount of currency for which to trade the item.
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
-        tokenHandler.safeTransferFrom(msg.sender, address(this), _item);
+        tokenHandler._marketTransfer(msg.sender, address(this), _item);
         trades[tradeCounter.current()] = Trade({
             poster: payable(msg.sender),
             item: _item,
@@ -106,13 +106,14 @@ contract ETHMarketplace is Ownable {
             (bool owner_sent, ) = owner().call{value: trade.price}("");
             require(owner_sent, "Failed to send eth to the owner");
         }
-        tokenHandler.safeTransferFrom(address(this), msg.sender, trade.item);
+        tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
 
     /**
-     * @dev Cancels a trade by the poster.
+     * @dev Cancels a trade made by the poster, the NFT returns to the
+     * poster.
      * @param _trade The trade to be cancelled.
      */
     function cancelTrade(uint256 _trade) public virtual {
@@ -122,30 +123,20 @@ contract ETHMarketplace is Ownable {
             "Trade can be cancelled only by poster."
         );
         require(trade.status == "Open", "Trade is not open");
-        tokenHandler.safeTransferFrom(address(this), trade.poster, trade.item);
+        tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
     }
 
-    function totalSupply() external view returns (uint256) {
-        return tokenHandler.totalSupply();
-    }
-
-    function tokenOfOwnerByIndex(address owner, uint256 index)
-        external
-        view
-        returns (uint256 tokenId)
-    {
-        return tokenHandler.tokenOfOwnerByIndex(owner, index);
-    }
-
-    function tokenByIndex(uint256 index) external view returns (uint256) {
-        return tokenHandler.tokenByIndex(index);
-    }
-
-    function mint(address to, NFTLabStoreMarketplaceVariant.NFTLab memory nft)
-        public
-    {
-        tokenHandler.mint(to, nft);
+    /**
+     * @dev Returns the NFTLabStorage address to interact with nfts.
+     * The trade logic handles everything that regards moving tokens
+     * when they are put on a trade (so that owners cannot open a
+     * trade and then move them), this way the owner of an nft can do
+     * whatever he wants with it, even give it for free to someone
+     * else
+     */
+    function getStorage() external view returns (address) {
+        return address(tokenHandler);
     }
 }

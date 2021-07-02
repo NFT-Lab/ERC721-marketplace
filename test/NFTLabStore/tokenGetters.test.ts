@@ -29,7 +29,7 @@ describe("NFTLabStore - token getters", function () {
       metadataCid: "metadataContentID",
     };
 
-    await nftLabStore.mint(nft);
+    await nftLabStore.mint(signers[0].address, nft);
 
     const [NFTcid, NFTmetadataCid] = await nftLabStore.getNFTByHash(nft.cid);
     expect(NFTcid).to.be.equal(nft.cid);
@@ -42,7 +42,7 @@ describe("NFTLabStore - token getters", function () {
       metadataCid: "metadataContentID",
     };
 
-    await nftLabStore.mint(nft);
+    await nftLabStore.mint(signers[0].address, nft);
 
     const tokenID: BigNumberish = await nftLabStore.getTokenId(nft.cid);
     expect(tokenID).to.be.equal(1);
@@ -54,7 +54,7 @@ describe("NFTLabStore - token getters", function () {
       metadataCid: "metadataContentID",
     };
 
-    await nftLabStore.mint(nft);
+    await nftLabStore.mint(signers[0].address, nft);
 
     const tokenID: BigNumberish = await nftLabStore.getTokenId(nft.cid);
 

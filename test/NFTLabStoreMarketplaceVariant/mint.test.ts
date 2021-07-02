@@ -23,7 +23,7 @@ describe("NFTLabStoreMarketplace - minting test", function () {
     )) as NFTLabStoreMarketplaceVariant;
   });
 
-  it("Should let owner mint", async () => {
+  it("Should let owner transfer focefully", async () => {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
@@ -33,53 +33,8 @@ describe("NFTLabStoreMarketplace - minting test", function () {
       .to.emit(nftLabStore, "Minted")
       .withArgs(signers[1].address, nft.cid, nft.metadataCid);
 
-    const totalSupply: BigNumberish = await nftLabStore.totalSupply();
-    await expect(totalSupply).to.be.equal(1);
-  });
-
-  it("Should not let anyone but the owner to mint", async () => {
-    const nft = {
-      cid: "contentID",
-      metadataCid: "metadataContentID",
-    };
-
     await expect(
-      nftLabStore.connect(signers[1]).mint(signers[0].address, nft)
-    ).to.be.revertedWith("");
-
-    const totalSupply: BigNumberish = await nftLabStore.totalSupply();
-    await expect(totalSupply).to.be.equal(0);
-  });
-
-  it("Should not let mint an already minted nft", async () => {
-    const nft = {
-      cid: "contentID",
-      metadataCid: "metadataContentID",
-    };
-
-    await expect(nftLabStore.mint(signers[0].address, nft))
-      .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[0].address, nft.cid, nft.metadataCid);
-
-    expect(nftLabStore.mint(signers[0].address, nft)).to.be.revertedWith(
-      "Token already exists"
-    );
-  });
-
-  it("Should not let mint an already minted nft based only on CID", async () => {
-    let nft = {
-      cid: "contentID",
-      metadataCid: "metadataContentID",
-    };
-
-    await expect(nftLabStore.mint(signers[0].address, nft))
-      .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[0].address, nft.cid, nft.metadataCid);
-
-    nft.metadataCid = "anotherMetadataContentID";
-
-    expect(
-      nftLabStore.connect(signers[0]).mint(signers[0].address, nft)
-    ).to.be.revertedWith("Token already exists");
+      nftLabStore._marketTransfer(signers[1].address, signers[2].address, 1)
+    ).to.emit(nftLabStore, "Transferred");
   });
 });

@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ContractFactory } from "@ethersproject/contracts";
 import { NFTLabStore } from "typechain";
-import { BigNumberish } from "ethers";
 
 describe("NFTLabStore - interface test", function () {
   let nftLabStore: NFTLabStore;

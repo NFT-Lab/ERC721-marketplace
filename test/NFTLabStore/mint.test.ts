@@ -29,7 +29,7 @@ describe("NFTLabStore - minting test", function () {
       metadataCid: "metadataContentID",
     };
 
-    await expect(nftLabStore.connect(signers[1]).mint(nft))
+    await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
       .withArgs(signers[1].address, nft.cid, nft.metadataCid);
 
@@ -43,13 +43,13 @@ describe("NFTLabStore - minting test", function () {
       metadataCid: "metadataContentID",
     };
 
-    await expect(nftLabStore.connect(signers[1]).mint(nft))
+    await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
       .withArgs(signers[1].address, nft.cid, nft.metadataCid);
 
-    expect(nftLabStore.connect(signers[0]).mint(nft)).to.be.revertedWith(
-      "Token already exists"
-    );
+    expect(
+      nftLabStore.connect(signers[0]).mint(signers[1].address, nft)
+    ).to.be.revertedWith("Token already exists");
   });
 
   it("Should not let mint an already minted nft based only on CID", async () => {
@@ -58,14 +58,14 @@ describe("NFTLabStore - minting test", function () {
       metadataCid: "metadataContentID",
     };
 
-    await expect(nftLabStore.connect(signers[1]).mint(nft))
+    await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
       .withArgs(signers[1].address, nft.cid, nft.metadataCid);
 
     nft.metadataCid = "anotherMetadataContentID";
 
-    expect(nftLabStore.connect(signers[0]).mint(nft)).to.be.revertedWith(
-      "Token already exists"
-    );
+    expect(
+      nftLabStore.connect(signers[0]).mint(signers[2].address, nft)
+    ).to.be.revertedWith("Token already exists");
   });
 });
