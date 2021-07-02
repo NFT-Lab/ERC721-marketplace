@@ -5,20 +5,21 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./NFTLabStoreMarketplaceVariant.sol";
 
 /**
  * @title NFTLabMarketplace
  * @notice Implements the classifieds board market. The market will be governed
- * by an ERC20 token as currency, and an ERC721 token that represents the
+ * by an ERC20 token as currency, and an NFTLabMarketplaceVariant that represents the
  * ownership of the items being traded. Only ads for selling items are
  * implemented. The item tokenization is responsibility of the ERC721 contract
  * which should encode any item details.
  */
-contract NFTLabERC20Marketplace {
-    event TradeStatusChange(uint256 ad, bytes32 status);
+contract ERC20Marketplace {
+    event TradeStatusChange(uint256 ad, string status);
 
     IERC20 currencyToken;
-    IERC721 itemToken;
+    NFTLabStoreMarketplaceVariant tokenHandler;
 
     struct Trade {
         address poster;
@@ -29,14 +30,17 @@ contract NFTLabERC20Marketplace {
 
     mapping(uint256 => Trade) private trades;
     mapping(address => uint256[]) private addressToTrades;
-    uint256[] maremma;
 
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
 
-    constructor(address _currencyTokenAddress, address _itemTokenAddress) {
+    constructor(
+        address _currencyTokenAddress,
+        string memory _name,
+        string memory _symbol
+    ) {
         currencyToken = IERC20(_currencyTokenAddress);
-        itemToken = IERC721(_itemTokenAddress);
+        tokenHandler = new NFTLabStoreMarketplaceVariant(_name, _symbol);
     }
 
     /**
@@ -77,7 +81,7 @@ contract NFTLabERC20Marketplace {
      * @param _price The amount of currency for which to trade the item.
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
-        itemToken.transferFrom(msg.sender, address(this), _item);
+        tokenHandler._marketTransfer(msg.sender, address(this), _item);
         Trade memory newTrade = Trade({
             poster: msg.sender,
             item: _item,
@@ -100,7 +104,7 @@ contract NFTLabERC20Marketplace {
         Trade memory trade = trades[_trade];
         require(trade.status == "Open", "Trade is not Open.");
         currencyToken.transferFrom(msg.sender, trade.poster, trade.price);
-        itemToken.transferFrom(address(this), msg.sender, trade.item);
+        tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
@@ -116,8 +120,20 @@ contract NFTLabERC20Marketplace {
             "Trade can be cancelled only by poster."
         );
         require(trade.status == "Open", "Trade is not Open.");
-        itemToken.transferFrom(address(this), trade.poster, trade.item);
+        tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
+    }
+
+    /**
+     * @dev Returns the NFTLabStorage address to interact with nfts.
+     * The trade logic handles everything that regards moving tokens
+     * when they are put on a trade (so that owners cannot open a
+     * trade and then move them), this way the owner of an nft can do
+     * whatever he wants with it, even give it for free to someone
+     * else
+     */
+    function getStorage() external view returns (address) {
+        return address(tokenHandler);
     }
 }
