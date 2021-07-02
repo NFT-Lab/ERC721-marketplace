@@ -45,7 +45,10 @@ describe("ERC20Marketplace tests", function () {
     // each signer has 1000 tokens
     signers.forEach(async (signer) => {
       badToken.connect(signer).juice();
-      badToken.approve(nftLabMarketplace.address, await badToken.balanceOf(signer.address));
+      badToken.approve(
+        nftLabMarketplace.address,
+        await badToken.balanceOf(signer.address)
+      );
     });
   });
 

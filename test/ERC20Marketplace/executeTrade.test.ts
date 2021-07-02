@@ -70,11 +70,7 @@ describe("ERC20Marketplace - execute trade", function () {
       metadataCid: "metadataCid",
     });
 
-    expect(
-      await nftLabMarketplace
-        .connect(signers[1])
-        .openTrade(1, 1000000)
-    )
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000000))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(0, "Open");
 
@@ -89,11 +85,7 @@ describe("ERC20Marketplace - execute trade", function () {
       metadataCid: "metadataCid",
     });
 
-    expect(
-      await nftLabMarketplace
-        .connect(signers[1])
-        .openTrade(1, 1)
-    )
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(0, "Open");
 
