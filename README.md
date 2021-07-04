@@ -1,3 +1,9 @@
+![Compilation](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/solidity-compile.yml/badge.svg)
+![Tests](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/tests.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/NFT-Lab/ERC721-marketplace/badge.svg?branch=main)](https://coveralls.io/github/NFT-Lab/ERC721-marketplace?branch=main)
+![code style](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/code-formatting.yml/badge.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+
 # ERC721 Marketplace
 ## Description
 This repo contains the contracts (along with their tests) to build an ERC721 marketplace on ethereum, wich underlying currency can either be ethereum itself (with _eth_) or an IERC20 implementation ([Openzeppelin's implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20) or your custom implementation).

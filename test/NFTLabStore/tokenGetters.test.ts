@@ -48,6 +48,12 @@ describe("NFTLabStore - token getters", function () {
     expect(tokenID).to.be.equal(1);
   });
 
+  it("Should revert if the token does not exist", async () => {
+    await expect(
+      nftLabStore.getTokenId("this-hash-does-not-exist")
+    ).to.be.revertedWith("Unable to get the ID of a non-existent NFT.");
+  });
+
   it("Should get nft by id", async () => {
     const nft = {
       cid: "contentID",
@@ -61,5 +67,11 @@ describe("NFTLabStore - token getters", function () {
     const [NFTcid, NFTmetadataCid] = await nftLabStore.getNFTById(tokenID);
     expect(NFTcid).to.be.equal(nft.cid);
     expect(NFTmetadataCid).to.be.equal(nft.metadataCid);
+  });
+
+  it("Should revert if the token does not exist", async () => {
+    await expect(nftLabStore.getNFTById(1)).to.be.revertedWith(
+      "Unable to get a non-existent NFT."
+    );
   });
 });

@@ -42,4 +42,10 @@ describe("NFTLabStore - history test", function () {
 
     expect((await nftLabStore.getHistory(tokenID)).length).to.be.equal(2);
   });
+
+  it("Should revert if the item does not exist", async () => {
+    await expect(nftLabStore.getHistory(1)).to.be.revertedWith(
+      "Unable to get the history of a non-existent NFT."
+    );
+  });
 });
