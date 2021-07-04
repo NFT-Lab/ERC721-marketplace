@@ -1,7 +1,7 @@
-[![Compilation](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/solidity-compile.yml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/solidity-compile.yml)
-[![Test](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/tests.yml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/tests.yml)
+[![Compilation](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/solidity-compile.yaml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/solidity-compile.yaml)
+[![Test](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/tests.yaml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/tests.yaml)
 [![Coverage Status](https://coveralls.io/repos/github/NFT-Lab/ERC721-marketplace/badge.svg?branch=main)](https://coveralls.io/github/NFT-Lab/ERC721-marketplace?branch=main)
-[![Test](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/code-formatting.yml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/code-formatting.yml)
+[![Test](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/code-formatting.yaml/badge.svg)](https://github.com/NFT-Lab/ERC721-marketplace/actions/workflows/code-formatting.yaml)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 # ERC721 Marketplace
