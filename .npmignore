@@ -4,6 +4,8 @@ package-lock.json
 
 #Hardhat files
 cache
+test
+scripts
 typechain
 artifacts/@openzeppelin
 coverage
