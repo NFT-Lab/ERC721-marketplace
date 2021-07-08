@@ -8,7 +8,12 @@ async function faucet(to: string) {
       balance: await signer.getBalance(),
     }))
   );
-  comparable.sort((a, b) => a.balance.sub(b.balance).toNumber());
+  comparable.sort((a, b) => {
+    const num = a.balance.sub(b.balance);
+    if (num.isNegative()) return -1;
+    else if (num.isZero()) return 0;
+    return 1;
+  });
   const tx = {
     to: to,
     value: hardhat.ethers.utils.parseEther("10"),
