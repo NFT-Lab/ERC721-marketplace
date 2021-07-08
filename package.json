@@ -1,6 +1,6 @@
 {
   "name": "erc721nftlab",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Implementation of ERC721 contract for NFTLab dapp",
   "main": "scripts/main.js",
   "directories": {
@@ -15,14 +15,12 @@
   },
   "author": "Luca Zaninotto",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@openzeppelin/contracts": "^4.1.0",
     "@openzeppelin/hardhat-upgrades": "^1.8.2",
     "hardhat": "^2.3.0",
     "hardhat-deploy-ethers": "^0.3.0-beta.7",
-    "solidity-coverage": "^0.7.16"
-  },
-  "devDependencies": {
+    "solidity-coverage": "^0.7.16",
     "@eth-optimism/smock": "^1.1.6",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
