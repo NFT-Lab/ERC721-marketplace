@@ -6,9 +6,14 @@
 
 # ERC721 Marketplace
 ## Description
-This repo contains the contracts (along with their tests) to build an ERC721 marketplace on ethereum, wich underlying currency can either be ethereum itself (with _eth_) or an IERC20 implementation ([Openzeppelin's implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20) or your custom implementation).
+This repo contains the contracts (along with their tests) to build an ERC721 marketplace on ethereum, wich underlying currency can either be ethereum itself (with _eth_) or an IERC20 implementation ([Openzeppelin's implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token/ERC20) or your custom implementation). Can be imported as a npm package (procedure described below), this wway it provides alla the contracts, ABI for them and typechain generated code for static typing in typescript to build a dApp on top of it with [ethers.js](https://github.com/ethers-io/ethers.js/)
 
 ## Usage
+```bash
+npm i --save-dev erc721nftlab
+```
+It installs the package and everythin needed in order to use ABI's alone with web3 or use typechain and ethers for static typing your dapp.
+### Install dependencies, compile, build on top of it
 ```bash
 npm i
 npm run compile
