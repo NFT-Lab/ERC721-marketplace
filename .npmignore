@@ -8,7 +8,6 @@ tsconfig.json
 cache
 test
 scripts
-typechain
 artifacts/@openzeppelin
 coverage
 coverage.json
