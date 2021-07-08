@@ -9,7 +9,10 @@ import 'solidity-coverage';
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
-    hardhat: {},
+      hardhat: {},
+      ganache: {
+	  url: "http://localhost:8545"
+      }
   },
   solidity: {
     version: '0.8.0',

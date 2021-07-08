@@ -1,18 +1,24 @@
-import { ethers } from 'ethers';
-import hardhat from 'hardhat';
+import { ethers } from "ethers";
+import hardhat from "hardhat";
 
 async function deploy(name: String, symbol: String) {
-  const NFTLabStore = await hardhat.ethers.getContractFactory("NFTLabStore");
-  const nftls = await NFTLabStore.deploy(name, symbol);
+  const ETHMarketplace = await hardhat.ethers.getContractFactory(
+    "ETHMarketplace"
+  );
+  const nftmp = await ETHMarketplace.deploy(name, symbol);
 
-  await nftls.deployed();
+  await nftmp.deployed();
 
-  console.log("Base account: " + (await hardhat.ethers.getSigners())[0].address)
-  console.log("Generated at: " + nftls.address);
+  console.log(
+    "Base account: " + (await hardhat.ethers.getSigners())[0].address
+  );
+  console.log("Generated at: " + nftmp.address);
 }
 
-deploy("Token name", "TKNS").then(() => {
-  console.log("done.")
-}).catch(error => {
-  console.log(error)
-})
+deploy("Token name", "TKNS")
+  .then(() => {
+    console.log("done.");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
