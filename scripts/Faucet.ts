@@ -29,7 +29,7 @@ async function faucet(to: string) {
     });
 }
 
-faucet("0x088c0Fb86f9C7d91a967E8A46F66Fb1a8C14dae8")
+faucet("0x344bb1D56393cc2DB8b523d7670FD9f4C8079977")
   .then(() => {
     console.log("done.");
   })

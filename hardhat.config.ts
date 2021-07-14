@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
       hardhat: {},
       ganache: {
 	  url: "http://localhost:8545"
-      }
+      },
   },
   solidity: {
     version: '0.8.0',

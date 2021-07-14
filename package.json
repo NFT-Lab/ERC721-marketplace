@@ -1,8 +1,19 @@
 {
   "name": "erc721nftlab",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Implementation of ERC721 contract for NFTLab dapp",
-  "main": "scripts/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NFT-Lab/ERC721-marketplace"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "zeppelin"
+  ],
   "directories": {
     "test": "test"
   },
