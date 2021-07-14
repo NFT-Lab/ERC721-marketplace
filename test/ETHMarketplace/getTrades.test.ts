@@ -71,4 +71,21 @@ describe("ETHMarketplace - get trades", function () {
       .to.contain(signers[1].address)
       .and.to.contain(ethers.utils.formatBytes32String("Open"));
   });
+
+  it("Should get all the active trades", async () => {
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(0, "Open");
+
+    const trade = await nftLabMarketplace
+      .connect(signers[1])
+      .getTradeOfNft(tokenID)
+
+    expect(await nftLabMarketplace.getTrade(trade)).not.to.be.null;
+  });
 });
