@@ -73,12 +73,7 @@ contract ETHMarketplace is Ownable {
      * @dev Returns the active trade of an NFT, 0 if no active trades are in place
      * @param _nft the nft of wich fetch the active trade
      */
-    function getTradeOfNft(uint256 _nft)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function getTradeOfNft(uint256 _nft) public view virtual returns (uint256) {
         return nftToActivetrade[_nft];
     }
 

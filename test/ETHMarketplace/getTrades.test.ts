@@ -84,7 +84,7 @@ describe("ETHMarketplace - get trades", function () {
 
     const trade = await nftLabMarketplace
       .connect(signers[1])
-      .getTradeOfNft(tokenID)
+      .getTradeOfNft(tokenID);
 
     expect(await nftLabMarketplace.getTrade(trade)).not.to.be.null;
   });
