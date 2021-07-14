@@ -13,13 +13,6 @@ const config: HardhatUserConfig = {
       ganache: {
 	  url: "http://localhost:8545"
       },
-      kovan: {
-	  url: "",
-	  accounts: [
-	      ""
-	  ]
-      }
-
   },
   solidity: {
     version: '0.8.0',
