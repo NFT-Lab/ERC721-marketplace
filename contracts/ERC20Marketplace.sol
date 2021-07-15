@@ -30,6 +30,7 @@ contract ERC20Marketplace {
 
     mapping(uint256 => Trade) private trades;
     mapping(address => uint256[]) private addressToTrades;
+    mapping(uint256 => uint256) nftToActivetrade;
 
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
@@ -76,6 +77,14 @@ contract ERC20Marketplace {
     }
 
     /**
+     * @dev Returns the active trade of an NFT, 0 if no active trades are in place
+     * @param _nft the nft of wich fetch the active trade
+     */
+    function getTradeOfNft(uint256 _nft) public view virtual returns (uint256) {
+        return nftToActivetrade[_nft];
+    }
+
+    /**
      * @dev Opens a new trade. Puts _item in escrow.
      * @param _item The id for the item to trade.
      * @param _price The amount of currency for which to trade the item.
@@ -90,6 +99,7 @@ contract ERC20Marketplace {
         });
         trades[tradeCounter.current()] = newTrade;
         addressToTrades[msg.sender].push(tradeCounter.current());
+        nftToActivetrade[_item] = tradeCounter.current();
         tradeCounter.increment();
         emit TradeStatusChange(tradeCounter.current() - 1, "Open");
     }
@@ -105,6 +115,7 @@ contract ERC20Marketplace {
         require(trade.status == "Open", "Trade is not Open.");
         currencyToken.transferFrom(msg.sender, trade.poster, trade.price);
         tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
+        delete nftToActivetrade[trade.item];
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
@@ -121,6 +132,7 @@ contract ERC20Marketplace {
         );
         require(trade.status == "Open", "Trade is not Open.");
         tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
+        delete nftToActivetrade[trade.item];
         trades[_trade].status = "Cancelled";
         emit TradeStatusChange(_trade, "Cancelled");
     }
