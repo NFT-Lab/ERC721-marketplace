@@ -41,9 +41,9 @@ describe("ETHMarketplace tests", function () {
       0
     );
     nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
-    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(0))
+    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Cancelled");
+      .withArgs(1, "Cancelled");
   });
 
   it("Only poster should be able to cancel", async () => {

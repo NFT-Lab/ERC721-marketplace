@@ -42,15 +42,15 @@ describe("ETHMarketplace - execute trade", function () {
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     expect(
       await nftLabMarketplace
         .connect(signers[2])
-        .executeTrade(0, { value: ethers.utils.parseEther("1") })
+        .executeTrade(1, { value: ethers.utils.parseEther("1") })
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Executed");
+      .withArgs(1, "Executed");
   });
 
   it("Should revert execute trade with insufficent funds", async () => {
@@ -65,12 +65,12 @@ describe("ETHMarketplace - execute trade", function () {
         .openTrade(1, ethers.utils.parseEther("1"))
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     await expect(
       nftLabMarketplace
         .connect(signers[2])
-        .executeTrade(0, { value: ethers.utils.parseEther("0.5") })
+        .executeTrade(1, { value: ethers.utils.parseEther("0.5") })
     ).to.be.revertedWith("You should pay the price of the token to get it");
   });
 
@@ -86,14 +86,14 @@ describe("ETHMarketplace - execute trade", function () {
         .openTrade(1, ethers.utils.parseEther("1"))
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     expect(
       await nftLabMarketplace
         .connect(signers[2])
-        .executeTrade(0, { value: ethers.utils.parseEther("1") })
+        .executeTrade(1, { value: ethers.utils.parseEther("1") })
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Executed");
+      .withArgs(1, "Executed");
   });
 });

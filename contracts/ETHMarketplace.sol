@@ -84,6 +84,7 @@ contract ETHMarketplace is Ownable {
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
         tokenHandler._marketTransfer(msg.sender, address(this), _item);
+        tradeCounter.increment();
         trades[tradeCounter.current()] = Trade({
             poster: payable(msg.sender),
             item: _item,
@@ -92,8 +93,7 @@ contract ETHMarketplace is Ownable {
         });
         addressToTrades[msg.sender].push(tradeCounter.current());
         nftToActivetrade[_item] = tradeCounter.current();
-        tradeCounter.increment();
-        emit TradeStatusChange(tradeCounter.current() - 1, "Open");
+        emit TradeStatusChange(tradeCounter.current(), "Open");
     }
 
     /**

@@ -43,7 +43,7 @@ describe("ETHMarketplace - get trades", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     expect(
       await nftLabMarketplace
@@ -60,7 +60,7 @@ describe("ETHMarketplace - get trades", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     const trades = await nftLabMarketplace
       .connect(signers[1])
@@ -80,7 +80,7 @@ describe("ETHMarketplace - get trades", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     const trade = await nftLabMarketplace
       .connect(signers[1])
