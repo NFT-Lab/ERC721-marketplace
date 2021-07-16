@@ -231,7 +231,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
      * @param index the index of the image to get
      */
     function getImageAt(uint256 index) external view returns (uint256) {
-        require(images.length < index, "Index out of bounds");
+        require(index < images.length, "Index out of bounds");
 
         return images[index];
     }
@@ -241,7 +241,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
      * @param index the index of the image to get
      */
     function getMusicAt(uint256 index) external view returns (uint256) {
-        require(music.length < index, "Index out of bounds");
+        require(index < music.length, "Index out of bounds");
 
         return music[index];
     }
@@ -251,7 +251,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
      * @param index the index of the video to get
      */
     function getVideoAt(uint256 index) external view returns (uint256) {
-        require(videos.length < index, "Index out of bounds");
+        require(index < videos.length, "Index out of bounds");
 
         return videos[index];
     }
