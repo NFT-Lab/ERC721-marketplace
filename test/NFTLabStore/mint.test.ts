@@ -27,11 +27,21 @@ describe("NFTLabStore - minting test", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+      .withArgs(
+        signers[1].address,
+        nft.cid,
+        nft.metadataCid,
+        nft.image,
+        nft.music,
+        nft.video
+      );
 
     const totalSupply: BigNumberish = await nftLabStore.totalSupply();
     await expect(totalSupply).to.be.equal(1);
@@ -41,11 +51,21 @@ describe("NFTLabStore - minting test", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+      .withArgs(
+        signers[1].address,
+        nft.cid,
+        nft.metadataCid,
+        nft.image,
+        nft.music,
+        nft.video
+      );
 
     expect(
       nftLabStore.connect(signers[0]).mint(signers[1].address, nft)
@@ -56,11 +76,21 @@ describe("NFTLabStore - minting test", function () {
     let nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await expect(nftLabStore.connect(signers[1]).mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+      .withArgs(
+        signers[1].address,
+        nft.cid,
+        nft.metadataCid,
+        nft.image,
+        nft.music,
+        nft.video
+      );
 
     nft.metadataCid = "anotherMetadataContentID";
 

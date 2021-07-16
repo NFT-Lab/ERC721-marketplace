@@ -27,11 +27,21 @@ describe("NFTLabStoreMarketplace - minting test", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      video: false,
+      music: false,
     };
 
     await expect(nftLabStore.mint(signers[1].address, nft))
       .to.emit(nftLabStore, "Minted")
-      .withArgs(signers[1].address, nft.cid, nft.metadataCid);
+      .withArgs(
+        signers[1].address,
+        nft.cid,
+        nft.metadataCid,
+        nft.image,
+        nft.music,
+        nft.video
+      );
 
     await expect(
       nftLabStore._marketTransfer(signers[1].address, signers[2].address, 1)

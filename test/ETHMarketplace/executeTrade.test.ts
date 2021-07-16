@@ -10,8 +10,14 @@ describe("ETHMarketplace - execute trade", function () {
   let nftLabMarketplace: ETHMarketplace;
   let nftLabStore: NFTLabStoreMarketplaceVariant;
   let nftLabStoreFactory: ContractFactory;
-  let NFT = { cid: "cid", metadataCid: "metadataCid" };
+  let NFT = {
+    cid: "cid",
+    metadataCid: "metadataCid",
 
+    image: true,
+    music: false,
+    video: false,
+  };
   beforeEach(async () => {
     signers = await ethers.getSigners();
     nftLabMarketplaceFactory = await ethers.getContractFactory(
@@ -38,6 +44,9 @@ describe("ETHMarketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000))
@@ -57,6 +66,9 @@ describe("ETHMarketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(
@@ -78,6 +90,9 @@ describe("ETHMarketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(

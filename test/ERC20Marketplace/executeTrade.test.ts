@@ -53,6 +53,9 @@ describe("ERC20Marketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 100))
@@ -68,6 +71,9 @@ describe("ERC20Marketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000000))
@@ -83,6 +89,9 @@ describe("ERC20Marketplace - execute trade", function () {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
+      image: true,
+      music: false,
+      video: false,
     });
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1))

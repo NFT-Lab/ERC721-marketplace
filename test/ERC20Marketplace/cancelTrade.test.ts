@@ -11,7 +11,13 @@ describe("ERC20Marketplace tests", function () {
   let signers: SignerWithAddress[];
   let nftLabMarketplace: ERC20Marketplace;
   let nftLabStore: NFTLabStoreMarketplaceVariant;
-  let NFT = { cid: "cid", metadataCid: "metadataCid" };
+  let NFT = {
+    cid: "cid",
+    metadataCid: "metadataCid",
+    image: true,
+    music: false,
+    video: false,
+  };
 
   beforeEach(async () => {
     signers = await ethers.getSigners();

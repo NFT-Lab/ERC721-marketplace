@@ -10,7 +10,13 @@ describe("ETHMarketplace - openTrade tests", function () {
   let nftLabMarketplace: ETHMarketplace;
   let nftLabStore: NFTLabStoreMarketplaceVariant;
   let nftLabStoreFactory: ContractFactory;
-  let NFT = { cid: "cid", metadataCid: "metadataCid" };
+  let NFT = {
+    cid: "cid",
+    metadataCid: "metadataCid",
+    image: true,
+    music: false,
+    video: false,
+  };
 
   beforeEach(async () => {
     signers = await ethers.getSigners();

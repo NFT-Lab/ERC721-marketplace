@@ -27,6 +27,9 @@ describe("NFTLabStore - token getters", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
@@ -40,6 +43,9 @@ describe("NFTLabStore - token getters", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
@@ -58,6 +64,9 @@ describe("NFTLabStore - token getters", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
