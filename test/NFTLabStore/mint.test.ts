@@ -51,8 +51,8 @@ describe("NFTLabStore - minting test", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
-      image: true,
-      music: false,
+      image: false,
+      music: true,
       video: false,
     };
 

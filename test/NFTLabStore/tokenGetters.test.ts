@@ -39,6 +39,12 @@ describe("NFTLabStore - token getters", function () {
     expect(NFTmetadataCid).to.be.equal(nft.metadataCid);
   });
 
+  it("Should not get nft by hash if hash is not registered", async () => {
+    await expect(
+      nftLabStore.getNFTByHash("Non existent token")
+    ).to.be.revertedWith("Unable to get a non-existent NFT.");
+  });
+
   it("Should get token id by hash", async () => {
     const nft = {
       cid: "contentID",
@@ -187,5 +193,23 @@ describe("NFTLabStore - token getters", function () {
     expect(
       await nftLabStore.getVideoAt(totalImgs.sub(BigNumber.from(1)))
     ).to.be.equal(BigNumber.from(1));
+  });
+
+  it("should revert if getImageAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getImageAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
+    );
+  });
+
+  it("should revert if getMusicAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getMusicAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
+    );
+  });
+
+  it("should revert if getVideoAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getVideoAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
+    );
   });
 });

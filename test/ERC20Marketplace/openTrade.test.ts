@@ -66,7 +66,7 @@ describe("ERC20Marketplace - openTrade tests", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
   });
 
   it("Should not open a new trade if sender does not own the article", async () => {

@@ -97,11 +97,11 @@ contract ERC20Marketplace {
             price: _price,
             status: "Open"
         });
+        tradeCounter.increment();
         trades[tradeCounter.current()] = newTrade;
         addressToTrades[msg.sender].push(tradeCounter.current());
         nftToActivetrade[_item] = tradeCounter.current();
-        tradeCounter.increment();
-        emit TradeStatusChange(tradeCounter.current() - 1, "Open");
+        emit TradeStatusChange(tradeCounter.current(), "Open");
     }
 
     /**
@@ -112,7 +112,7 @@ contract ERC20Marketplace {
      */
     function executeTrade(uint256 _trade) public virtual {
         Trade memory trade = trades[_trade];
-        require(trade.status == "Open", "Trade is not Open.");
+        require(trade.status == "Open", "Trade is not open");
         currencyToken.transferFrom(msg.sender, trade.poster, trade.price);
         tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
         delete nftToActivetrade[trade.item];
@@ -130,7 +130,7 @@ contract ERC20Marketplace {
             msg.sender == trade.poster,
             "Trade can be cancelled only by poster."
         );
-        require(trade.status == "Open", "Trade is not Open.");
+        require(trade.status == "Open", "Trade is not open");
         tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
         delete nftToActivetrade[trade.item];
         trades[_trade].status = "Cancelled";

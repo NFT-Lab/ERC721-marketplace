@@ -51,6 +51,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         ERC721(name, symbol)
     {}
 
+    /* istanbul ignore next */
     function _burn(uint256 tokenId)
         internal
         virtual

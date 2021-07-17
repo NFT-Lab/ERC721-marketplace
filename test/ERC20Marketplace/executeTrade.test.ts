@@ -60,11 +60,11 @@ describe("ERC20Marketplace - execute trade", function () {
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 100))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
-    expect(await nftLabMarketplace.connect(signers[2]).executeTrade(0))
+    expect(await nftLabMarketplace.connect(signers[2]).executeTrade(1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Executed");
+      .withArgs(1, "Executed");
   });
 
   it("Should revert execute trade with insufficent funds", async () => {
@@ -78,14 +78,14 @@ describe("ERC20Marketplace - execute trade", function () {
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000000))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     await expect(
-      nftLabMarketplace.connect(signers[2]).executeTrade(0)
+      nftLabMarketplace.connect(signers[2]).executeTrade(1)
     ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
   });
 
-  it("Should execute an open trade", async () => {
+  it("Should not execute a not open tread", async () => {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
       metadataCid: "metadataCid",
@@ -96,10 +96,14 @@ describe("ERC20Marketplace - execute trade", function () {
 
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
-    expect(await nftLabMarketplace.connect(signers[2]).executeTrade(0))
+    expect(await nftLabMarketplace.connect(signers[1]).cancelTrade(1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Executed");
+      .withArgs(1, "Cancelled");
+
+    await expect(
+      nftLabMarketplace.connect(signers[2]).executeTrade(1)
+    ).to.be.revertedWith("Trade is not open");
   });
 });

@@ -11,6 +11,7 @@ describe("ERC20Marketplace tests", function () {
   let signers: SignerWithAddress[];
   let nftLabMarketplace: ERC20Marketplace;
   let nftLabStore: NFTLabStoreMarketplaceVariant;
+  let badToken: BadToken;
   let NFT = {
     cid: "cid",
     metadataCid: "metadataCid",
@@ -36,7 +37,7 @@ describe("ERC20Marketplace tests", function () {
       signers[0]
     );
 
-    const badToken = (await badTokenFactory.deploy()) as BadToken;
+    badToken = (await badTokenFactory.deploy()) as BadToken;
 
     nftLabMarketplace = (await nftLabMarketplaceFactory.deploy(
       badToken.address,
@@ -65,9 +66,9 @@ describe("ERC20Marketplace tests", function () {
       0
     );
     nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 10);
-    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(0))
+    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Cancelled");
+      .withArgs(1, "Cancelled");
   });
 
   it("Only poster should be able to cancel", async () => {
@@ -78,7 +79,29 @@ describe("ERC20Marketplace tests", function () {
     );
     nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
     await expect(
-      nftLabMarketplace.connect(signers[2]).cancelTrade(0)
+      nftLabMarketplace.connect(signers[2]).cancelTrade(1)
     ).to.be.revertedWith("");
+  });
+
+  it("Only open trades can be cancelled", async () => {
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+
+    nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
+
+    badToken
+      .connect(signers[1])
+      .increaseAllowance(nftLabMarketplace.address, 1);
+
+    await expect(nftLabMarketplace.connect(signers[1]).executeTrade(1))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(1, "Executed");
+
+    await expect(
+      nftLabMarketplace.connect(signers[1]).cancelTrade(1)
+    ).to.be.revertedWith("Trade is not open");
   });
 });

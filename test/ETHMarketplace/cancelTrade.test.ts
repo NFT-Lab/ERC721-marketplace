@@ -62,4 +62,20 @@ describe("ETHMarketplace tests", function () {
       nftLabMarketplace.connect(signers[2]).cancelTrade(0)
     ).to.be.revertedWith("");
   });
+
+  it("Should not cancel a cancelled trade", async () => {
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+    nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1);
+    await expect(nftLabMarketplace.connect(signers[1]).cancelTrade(1))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(1, "Cancelled");
+
+    await expect(
+      nftLabMarketplace.connect(signers[1]).cancelTrade(1)
+    ).to.be.revertedWith("Trade is not open");
+  });
 });
