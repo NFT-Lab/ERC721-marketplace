@@ -28,6 +28,7 @@ contract ETHMarketplace is Ownable {
 
     mapping(uint256 => Trade) trades;
     mapping(address => uint256[]) addressToTrades;
+    mapping(uint256 => uint256) nftToActivetrade;
 
     using Counters for Counters.Counter;
     Counters.Counter private tradeCounter;
@@ -69,12 +70,21 @@ contract ETHMarketplace is Ownable {
     }
 
     /**
+     * @dev Returns the active trade of an NFT, 0 if no active trades are in place
+     * @param _nft the nft of wich fetch the active trade
+     */
+    function getTradeOfNft(uint256 _nft) public view virtual returns (uint256) {
+        return nftToActivetrade[_nft];
+    }
+
+    /**
      * @dev Opens a new trade. Puts _item in escrow.
      * @param _item The id for the item to trade.
      * @param _price The amount of currency for which to trade the item.
      */
     function openTrade(uint256 _item, uint256 _price) public virtual {
         tokenHandler._marketTransfer(msg.sender, address(this), _item);
+        tradeCounter.increment();
         trades[tradeCounter.current()] = Trade({
             poster: payable(msg.sender),
             item: _item,
@@ -82,8 +92,8 @@ contract ETHMarketplace is Ownable {
             status: "Open"
         });
         addressToTrades[msg.sender].push(tradeCounter.current());
-        tradeCounter.increment();
-        emit TradeStatusChange(tradeCounter.current() - 1, "Open");
+        nftToActivetrade[_item] = tradeCounter.current();
+        emit TradeStatusChange(tradeCounter.current(), "Open");
     }
 
     /**
@@ -106,6 +116,7 @@ contract ETHMarketplace is Ownable {
             (bool owner_sent, ) = owner().call{value: trade.price}("");
             require(owner_sent, "Failed to send eth to the owner");
         }
+        delete nftToActivetrade[trade.item];
         tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
@@ -125,6 +136,7 @@ contract ETHMarketplace is Ownable {
         require(trade.status == "Open", "Trade is not open");
         tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
         trades[_trade].status = "Cancelled";
+        delete nftToActivetrade[trade.item];
         emit TradeStatusChange(_trade, "Cancelled");
     }
 

@@ -27,6 +27,9 @@ describe("NFTLabStore - history test", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);

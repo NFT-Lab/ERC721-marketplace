@@ -28,6 +28,9 @@ describe("NFTLabStore - Transfer tests", function () {
     const nft = {
       cid: "NFT Cid",
       metadataCid: "Metadata Cid",
+      image: true,
+      music: false,
+      video: false,
     };
 
     const transaction = {

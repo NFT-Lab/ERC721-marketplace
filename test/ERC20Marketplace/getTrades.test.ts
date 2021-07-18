@@ -11,7 +11,13 @@ describe("ERC20Marketplace - get trades", function () {
   let signers: SignerWithAddress[];
   let nftLabMarketplace: ERC20Marketplace;
   let nftLabStore: NFTLabStoreMarketplaceVariant;
-  let NFT = { cid: "cid", metadataCid: "metadataCid" };
+  let NFT = {
+    cid: "cid",
+    metadataCid: "metadataCid",
+    image: true,
+    music: false,
+    video: false,
+  };
 
   beforeEach(async () => {
     signers = await ethers.getSigners();
@@ -57,7 +63,7 @@ describe("ERC20Marketplace - get trades", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     expect(
       await nftLabMarketplace
@@ -74,7 +80,7 @@ describe("ERC20Marketplace - get trades", function () {
     );
     expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(0, "Open");
+      .withArgs(1, "Open");
 
     const trades = await nftLabMarketplace
       .connect(signers[1])
@@ -84,5 +90,22 @@ describe("ERC20Marketplace - get trades", function () {
     expect(await nftLabMarketplace.getTrade(trades[0]))
       .to.contain(signers[1].address)
       .and.to.contain(ethers.utils.formatBytes32String("Open"));
+  });
+
+  it("Should get all the active trades", async () => {
+    nftLabStore.mint(signers[1].address, NFT);
+    const tokenID = await nftLabStore.tokenOfOwnerByIndex(
+      signers[1].address,
+      0
+    );
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(tokenID, 1))
+      .to.emit(nftLabMarketplace, "TradeStatusChange")
+      .withArgs(1, "Open");
+
+    const trade = await nftLabMarketplace
+      .connect(signers[1])
+      .getTradeOfNft(tokenID);
+
+    expect(await nftLabMarketplace.getTrade(trade)).not.to.be.null;
   });
 });

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ContractFactory } from "@ethersproject/contracts";
 import { NFTLabStore } from "typechain";
-import { BigNumberish } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 
 describe("NFTLabStore - token getters", function () {
   let nftLabStore: NFTLabStore;
@@ -27,6 +27,9 @@ describe("NFTLabStore - token getters", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
@@ -36,10 +39,19 @@ describe("NFTLabStore - token getters", function () {
     expect(NFTmetadataCid).to.be.equal(nft.metadataCid);
   });
 
+  it("Should not get nft by hash if hash is not registered", async () => {
+    await expect(
+      nftLabStore.getNFTByHash("Non existent token")
+    ).to.be.revertedWith("Unable to get a non-existent NFT.");
+  });
+
   it("Should get token id by hash", async () => {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
@@ -58,6 +70,9 @@ describe("NFTLabStore - token getters", function () {
     const nft = {
       cid: "contentID",
       metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
     };
 
     await nftLabStore.mint(signers[0].address, nft);
@@ -72,6 +87,129 @@ describe("NFTLabStore - token getters", function () {
   it("Should revert if the token does not exist", async () => {
     await expect(nftLabStore.getNFTById(1)).to.be.revertedWith(
       "Unable to get a non-existent NFT."
+    );
+  });
+
+  it("Should get the right amount of Image tokens", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    expect(await nftLabStore.image_totalSupply()).to.be.equal(
+      BigNumber.from(1)
+    );
+  });
+
+  it("Should get the right amount of Music tokens", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: true,
+      video: false,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    expect(await nftLabStore.music_totalSupply()).to.be.equal(
+      BigNumber.from(1)
+    );
+  });
+
+  it("Should get the right amount of Video tokens", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: true,
+      video: true,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    expect(await nftLabStore.video_totalSupply()).to.be.equal(
+      BigNumber.from(1)
+    );
+  });
+
+  it("Should get the right image token from iteration", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: false,
+      video: false,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    const totalImgs = await nftLabStore.image_totalSupply();
+
+    expect(totalImgs).to.be.equal(BigNumber.from(1));
+    expect(
+      await nftLabStore.getImageAt(totalImgs.sub(BigNumber.from(1)))
+    ).to.be.equal(BigNumber.from(1));
+  });
+
+  it("Should get the right music token from iteration", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: true,
+      video: false,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    const totalImgs = await nftLabStore.music_totalSupply();
+
+    expect(totalImgs).to.be.equal(BigNumber.from(1));
+    expect(
+      await nftLabStore.getMusicAt(totalImgs.sub(BigNumber.from(1)))
+    ).to.be.equal(BigNumber.from(1));
+  });
+
+  it("Should get the right video token from iteration", async () => {
+    const nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: true,
+      music: true,
+      video: true,
+    };
+
+    await nftLabStore.mint(signers[0].address, nft);
+
+    const totalImgs = await nftLabStore.video_totalSupply();
+
+    expect(totalImgs).to.be.equal(BigNumber.from(1));
+    expect(
+      await nftLabStore.getVideoAt(totalImgs.sub(BigNumber.from(1)))
+    ).to.be.equal(BigNumber.from(1));
+  });
+
+  it("should revert if getImageAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getImageAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
+    );
+  });
+
+  it("should revert if getMusicAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getMusicAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
+    );
+  });
+
+  it("should revert if getVideoAt hash index greater than total length", async () => {
+    await expect(nftLabStore.getVideoAt(BigNumber.from(3))).to.be.revertedWith(
+      "Index out of bounds"
     );
   });
 });

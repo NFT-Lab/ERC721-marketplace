@@ -9,6 +9,9 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     struct NFTLab {
         string cid;
         string metadataCid;
+        bool image;
+        bool music;
+        bool video;
     }
 
     struct NFTTransaction {
@@ -22,10 +25,21 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
     Counters.Counter private _tokenIds;
 
     mapping(uint256 => NFTLab) private _nfts;
+    uint256[] images;
+    uint256[] music;
+    uint256[] videos;
     mapping(string => uint256) private _hashToId;
     mapping(uint256 => NFTTransaction[]) private _history;
 
-    event Minted(address artist, string hash, string metadata);
+    event Minted(
+        address artist,
+        string hash,
+        string metadata,
+        bool img,
+        bool music,
+        bool video
+    );
+
     event Transferred(
         uint256 tokenId,
         address seller,
@@ -37,6 +51,7 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         ERC721(name, symbol)
     {}
 
+    /* istanbul ignore next */
     function _burn(uint256 tokenId)
         internal
         virtual
@@ -117,9 +132,20 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
         _nfts[newTokenId] = nft;
         _hashToId[nft.cid] = newTokenId;
 
+        if (nft.image) images.push(newTokenId);
+        if (nft.music) music.push(newTokenId);
+        if (nft.video) videos.push(newTokenId);
+
         _recordHistory(address(0), to, newTokenId);
 
-        emit Minted(to, nft.cid, nft.metadataCid);
+        emit Minted(
+            to,
+            nft.cid,
+            nft.metadataCid,
+            nft.image,
+            nft.music,
+            nft.video
+        );
     }
 
     /**
@@ -199,5 +225,56 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
      */
     function _baseURI() internal pure override returns (string memory) {
         return "https://cloudflare-ipfs.com/ipfs/";
+    }
+
+    /**
+     * @dev returns the nft tagged as image at index `index` inside the map
+     * @param index the index of the image to get
+     */
+    function getImageAt(uint256 index) external view returns (uint256) {
+        require(index < images.length, "Index out of bounds");
+
+        return images[index];
+    }
+
+    /**
+     * @dev returns the nft tagged as music at index `index` inside the map
+     * @param index the index of the image to get
+     */
+    function getMusicAt(uint256 index) external view returns (uint256) {
+        require(index < music.length, "Index out of bounds");
+
+        return music[index];
+    }
+
+    /**
+     * @dev returns the nft tagged as video at index `index` inside the map
+     * @param index the index of the video to get
+     */
+    function getVideoAt(uint256 index) external view returns (uint256) {
+        require(index < videos.length, "Index out of bounds");
+
+        return videos[index];
+    }
+
+    /**
+     * @dev returns the amount of nfts tagged as image
+     */
+    function image_totalSupply() external view returns (uint256) {
+        return images.length;
+    }
+
+    /**
+     * @dev returns the amount of nfts tagged as music
+     */
+    function music_totalSupply() external view returns (uint256) {
+        return music.length;
+    }
+
+    /**
+     * @dev returns the amount of nfts tagged as video
+     */
+    function video_totalSupply() external view returns (uint256) {
+        return videos.length;
     }
 }
