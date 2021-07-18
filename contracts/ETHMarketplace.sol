@@ -109,13 +109,8 @@ contract ETHMarketplace is Ownable {
             "You should pay the price of the token to get it"
         );
         require(trade.status == "Open", "Trade is not open");
-        uint256 tip = msg.value - trade.price;
-        (bool sent, ) = trade.poster.call{value: trade.price}("");
+        (bool sent, ) = trade.poster.call{value: (trade.price * (10**18))}("");
         require(sent, "Failed to send eth to pay the art");
-        if (tip > 0) {
-            (bool owner_sent, ) = owner().call{value: trade.price}("");
-            require(owner_sent, "Failed to send eth to the owner");
-        }
         delete nftToActivetrade[trade.item];
         tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
         trades[_trade].status = "Executed";

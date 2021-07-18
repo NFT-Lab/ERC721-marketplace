@@ -1,6 +1,6 @@
 {
   "name": "erc721nftlab",
-  "version": "2.3.2",
+  "version": "2.3.4",
   "description": "Implementation of ERC721 contract for NFTLab dapp",
   "repository": {
     "type": "git",
