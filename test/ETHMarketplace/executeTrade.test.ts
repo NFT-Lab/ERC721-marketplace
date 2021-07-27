@@ -81,7 +81,7 @@ describe("ETHMarketplace - execute trade", function () {
     expect(
       await nftLabMarketplace
         .connect(signers[2])
-        .executeTrade(1, { value: ethers.utils.parseEther("1.1") })
+        .executeTrade(1, { value: ethers.utils.parseEther("1.2") })
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(1, "Executed");
