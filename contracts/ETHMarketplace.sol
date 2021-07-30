@@ -112,7 +112,7 @@ contract ETHMarketplace is Ownable {
         (bool sent, ) = trade.poster.call{value: (trade.price)}("");
         require(sent, "Failed to send eth to pay the art");
         tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
-	delete nftToActivetrade[trade.item];
+        delete nftToActivetrade[trade.item];
         trades[_trade].status = "Executed";
         emit TradeStatusChange(_trade, "Executed");
     }
