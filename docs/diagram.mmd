@@ -1,0 +1,51 @@
+classDiagram
+	class Marketplace {
+	    +mapping trades
+	    +mapping addressToTrades
+	    +mapping nftToActiveTrade
+	    -Counter tradeCounter
+
+	    +getTrade(uint256)
+	    +uint25 getTradesOfAddress(address)
+	    +uint256getTradeOfNft(uint256)
+	    +address getStorage()
+
+	    +openTrade(uint256,uint256)
+	    +executeTrade(uint256,uint256)
+	    +cancelTrade(uint256,uint256)
+
+	    #_pay(address,payable address,uint256)
+	    #_checkPayment(uint256,uint256)
+	}
+	
+    class ETHMarketplace
+	class ERC20Marketplace
+
+    class NFTLabStore {
+        - _nfts
+        uint256[] images
+        uint256[] music
+        uint256[] video
+        +mint(address, NFTLab)
+        +safeTransferFrom(from, to, tokenId)
+        +getHistory(uint256) NFTTransaction[]
+        +getTokenId(string) uint256
+        +getNFTByHash(string) NFTLab
+        +getNFTById(uint256) NFTLab
+        +getImageAt(uint256) uint256
+        +getMusicAt(uint256) uint256
+        +getVideoAt(uint256) uint256
+        +image_totalSupply() uint256
+        +music_totalSupply() uint256
+        +video_totalSupply() uint256
+        #_recordHistory(address, address, uint256)
+    }
+
+    class NFTLabStoreMarketplaceVariant {
+        +_marketTransfer(address, address, uint256)
+    }
+
+	ETHMarketplace --|> Marketplace
+	ERC20Marketplace --|> Marketplace
+    NFTLabStoreMarketplaceVariant --|> NFTLabStore
+    Marketplace o-- NFTLabStoreMarketplaceVariant
