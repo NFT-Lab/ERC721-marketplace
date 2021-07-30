@@ -121,6 +121,10 @@ contract NFTLabStore is ERC721URIStorage, ERC721Enumerable {
      */
     function mint(address to, NFTLab memory nft) public {
         require(_hashToId[nft.cid] == 0, "Token already exists");
+        require(
+            nft.image || nft.music || nft.video,
+            "The NFT should belong to at least one category"
+        );
 
         _tokenIds.increment();
 

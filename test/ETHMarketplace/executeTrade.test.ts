@@ -41,28 +41,6 @@ describe("ETHMarketplace - execute trade", function () {
     )) as NFTLabStoreMarketplaceVariant;
   });
 
-  it("Should execute an open trade", async () => {
-    nftLabStore.mint(signers[1].address, {
-      cid: "cid",
-      metadataCid: "metadataCid",
-      image: true,
-      music: false,
-      video: false,
-    });
-
-    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1000))
-      .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(1, "Open");
-
-    expect(
-      await nftLabMarketplace
-        .connect(signers[2])
-        .executeTrade(1, { value: ethers.utils.parseEther("1") })
-    )
-      .to.emit(nftLabMarketplace, "TradeStatusChange")
-      .withArgs(1, "Executed");
-  });
-
   it("Should revert execute trade with insufficent funds", async () => {
     nftLabStore.mint(signers[1].address, {
       cid: "cid",
@@ -96,18 +74,14 @@ describe("ETHMarketplace - execute trade", function () {
       video: false,
     });
 
-    expect(
-      await nftLabMarketplace
-        .connect(signers[1])
-        .openTrade(1, ethers.utils.parseEther("1"))
-    )
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(1, "Open");
 
     expect(
       await nftLabMarketplace
         .connect(signers[2])
-        .executeTrade(1, { value: ethers.utils.parseEther("1") })
+        .executeTrade(1, { value: ethers.utils.parseEther("1.2") })
     )
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(1, "Executed");
@@ -122,11 +96,7 @@ describe("ETHMarketplace - execute trade", function () {
       video: false,
     });
 
-    expect(
-      await nftLabMarketplace
-        .connect(signers[1])
-        .openTrade(1, ethers.utils.parseEther("1"))
-    )
+    expect(await nftLabMarketplace.connect(signers[1]).openTrade(1, 1))
       .to.emit(nftLabMarketplace, "TradeStatusChange")
       .withArgs(1, "Open");
 

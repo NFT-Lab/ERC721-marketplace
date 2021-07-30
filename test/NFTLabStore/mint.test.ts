@@ -98,4 +98,18 @@ describe("NFTLabStore - minting test", function () {
       nftLabStore.connect(signers[0]).mint(signers[2].address, nft)
     ).to.be.revertedWith("Token already exists");
   });
+
+  it("Should not mint if no categories are set", async () => {
+    let nft = {
+      cid: "contentID",
+      metadataCid: "metadataContentID",
+      image: false,
+      music: false,
+      video: false,
+    };
+
+    await expect(
+      nftLabStore.connect(signers[1]).mint(signers[1].address, nft)
+    ).to.be.revertedWith("The NFT should belong to at least one category");
+  });
 });
