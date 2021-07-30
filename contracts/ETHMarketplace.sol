@@ -15,6 +15,7 @@ import "./Marketplace.sol";
  * which should encode any item details.
  */
 contract ETHMarketplace is Marketplace {
-
-    constructor(string memory _name, string memory _symbol) Marketplace(_name, _symbol) {}
+    constructor(string memory _name, string memory _symbol)
+        Marketplace(_name, _symbol)
+    {}
 }

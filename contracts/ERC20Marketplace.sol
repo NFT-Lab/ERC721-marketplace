@@ -16,7 +16,6 @@ import "./Marketplace.sol";
  * which should encode any item details.
  */
 contract ERC20Marketplace is Marketplace {
-
     IERC20 currencyToken;
 
     constructor(
@@ -24,13 +23,16 @@ contract ERC20Marketplace is Marketplace {
         string memory _name,
         string memory _symbol
     ) Marketplace(_name, _symbol) {
-
         currencyToken = IERC20(_currencyTokenAddress);
         tokenHandler = new NFTLabStoreMarketplaceVariant(_name, _symbol);
     }
 
-    function _pay(address from, address payable to, uint256 amount) internal override returns (bool) {
-	return currencyToken.transferFrom(from, to, amount);
+    function _pay(
+        address from,
+        address payable to,
+        uint256 amount
+    ) internal override returns (bool) {
+        return currencyToken.transferFrom(from, to, amount);
     }
 
     function _checkPayment(uint256 sent, uint256 price) internal override {}

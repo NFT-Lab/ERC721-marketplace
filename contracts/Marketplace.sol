@@ -120,9 +120,13 @@ contract Marketplace is Ownable {
      * @param to the reciver of the payament
      * @param amount amount to pay
      */
-    function _pay(address from, address payable to, uint256 amount) internal virtual returns (bool) {
-	(bool sent, ) = to.call{value: amount}("");
-	return sent;
+    function _pay(
+        address from,
+        address payable to,
+        uint256 amount
+    ) internal virtual returns (bool) {
+        (bool sent, ) = to.call{value: amount}("");
+        return sent;
     }
 
     /**
@@ -131,7 +135,7 @@ contract Marketplace is Ownable {
      * @param price price of the NFT
      */
     function _checkPayment(uint256 sent, uint256 price) internal virtual {
-	require(
+        require(
             sent >= price,
             "You should pay the price of the token to get it"
         );
