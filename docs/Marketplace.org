@@ -2,12 +2,12 @@
 #+AUTHOR: Luca Zaninotto
 * A cosa server il Marketplace
   Consente di aprire /trade/ per un particolare NFT, di cancellarli
-  qualora non si vogli apiù vendere o eseguirli, così da ricevere il
+  qualora non si voglia più vendere o eseguirli, così da ricevere il
   token in cambio del prezzo fissato.
 ** Protocollo
 *** 1. minting dell'NFT
     Per poter vendere un NFT è necessario che questo sia registrato
-    nello store utilizzato dal marketplace. per fare ciò bisogna
+    nello store utilizzato dal marketplace. Per fare ciò bisogna
     richiamare da wallet la funzione di minting, come descritto in
     [[file:NFTLabStore.org][NFTLabStore]].
 
@@ -47,11 +47,6 @@
     amico per evitare di cedere il token al momento dell'esecuzione
     della stessa.
 
-    La funzione pay si occupa del trasferimento di denaro, di default
-    è implementata per utilizzare gli ether, ma è possibile ridefnirla
-    per utilizzare qualsiasi altro metodo di pagamento (ad esempio gli
-    ERC20 in [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol][ERC20Marketplace]]).
-
 *** 4a. ~executeTrade()~
 
     #+BEGIN_SRC solidity
@@ -81,6 +76,11 @@
     necessaria per l'esecuzione (o in ether o tramite ~approve~ degli
     [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol][ERC20]]), in questo modo una volta avvenuto il trasferimento di
     denaro il token verrà inviato al chiamante.
+
+    La funzione pay si occupa del trasferimento di denaro, di default
+    è implementata per utilizzare gli ether, ma è possibile ridefnirla
+    per utilizzare qualsiasi altro metodo di pagamento (ad esempio gli
+    ERC20 in [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol][ERC20Marketplace]]).
 
     ~_checkpayment~ controlla che la somma inviata sia sufficente a
     coprire il pagamento.
@@ -115,10 +115,10 @@
 
 * NFTLabStoreMarketplaceVariant
   
-  È di fatto NFTLabStore, ma aggiunge una funzione permette all'owner
-  del contratto (ovvero il marketplace) di forzare il trasferimento
-  del token indicato, così da evitare una chiamata al wallet
-  proprietario per autorizzare il marketplace al trasferimento
+  È di fatto NFTLabStore, ma aggiunge una funzione permette
+  all'/owner/ del contratto (ovvero il marketplace) di forzare il
+  trasferimento del token indicato, così da evitare una chiamata al
+  wallet proprietario per autorizzare il marketplace al trasferimento
   all'apertura di una compravendita, rifucendo i costi di chiamata
   senza comprometterne la sicurezza (di fatto è proprio chiamabile
   solamente dal marketplace).
@@ -146,9 +146,8 @@
 
 * Implementazioni
   [[file:../contracts/ETHMarketplace.sol][ETHMarketplace]] implementa lo store utilizzando come metodo di
-  pagamento ethereum, di fatto semplicemente ereditando il contratto
-  principale [[file:../contracts/Marketplace.sol][Marketplace]]. [[file:~/uni/synclab/eth-markt/contracts/ERC20Marketplace.sol][ERC20Marketplace]] Implementa invece il
-  meccanismo di cambio di valuta, ricevendo da costruttore il
-  contratto che implementa lo standard ERC20, così da reimplementare
-  le funzioni di pagamento e utilizzare come valuta il contratto
-  designato.
+  pagamento ethereum ereditando il contratto principale
+  [[file:../contracts/Marketplace.sol][Marketplace]]. [[file:~/uni/synclab/eth-markt/contracts/ERC20Marketplace.sol][ERC20Marketplace]] Implementa invece il meccanismo di
+  cambio di valuta, ricevendo da costruttore il contratto che
+  implementa lo standard ERC20, così da reimplementare le funzioni di
+  pagamento e utilizzare come valuta il contratto designato.
