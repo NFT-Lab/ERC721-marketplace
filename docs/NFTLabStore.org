@@ -1,0 +1,107 @@
+#+TITLE: Architettura NFTLabStore
+#+AUTHOR: Luca Zaninotto
+* A cosa serve lo store
+  il contratto NFTLabStore è un'implementazione di ~ERC721URIStorage~,
+  che permette di gestire gli NFT al proprio interno. In particolare
+  NFTLabStore eredita anche da ~ERC721Enumerable~, così da permettere
+  ai wallet di ricevere la lista dei token presenti nello store e
+  percorrerli tramite una mappa della quale è nota la grandezza. In
+  particolare viene utilizzata l'[[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol][implementazione standard di
+  openzeppelin]] che implementa l'interfaccia [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/IERC721Enumerable.sol][IERC721Enumerable]].  Questo
+  set di funzioni permette ai token di essere iterabili da un wallet a
+  costo zero, dato che sono tutte funzioni di view.
+  
+** Classi ereditate
+   ~NFTLabStore~ eredita da ERC721URIStorage e ERC721Enumerable come
+   già detto in precedenza, questo permette al contratto di godere già
+   di implementazioni standard dello standard ERC721 e dover
+   ridefinire solo la modalità di minting, espressa di seguito.
+
+** Minting
+   È possibile creare un NFT chiamando la funzione di mint con
+   l'indirizzo che ne sarà possessore e l astruttura dati che lo
+   identifica. La firma del metodo è la seguente
+   #+BEGIN_SRC solidity
+     /**
+      ,* @dev mints an NFT out of thin air for the msg.sender, the msg
+      ,* sender is now the owner of that NFT .
+      ,* @param nft the struct describing the NFT, See
+      ,* {xref-NFTLabStore-NFTLab} for reference
+      ,*/
+     function mint(address to, NFTLab memory nft) public;
+   #+END_SRC
+  
+*** Token
+    Un token è identificato dalla struttura (~NFTLabStore:9:5~)
+    #+BEGIN_SRC solidity
+      struct NFTLab {
+	      string cid;
+	      string metadataCid;
+	      bool image;
+	      bool music;
+	      bool video;
+      }
+    #+END_SRC
+    idealmente l'operazione di minting viene richiamata con due
+    stringhe che identificano il content id di un artefatto su ipfs
+    ([[http://docs.ipfs.io.ipns.localhost:8080/concepts/content-addressing/][documentazione qui]]) e il content id dei metadati associti sempre
+    su ipfs. I metadati non hanno una struttura fissa, e idealmente
+    possono essere qualsiasi file su ipfs. Ad esempio
+    nell'[[https://github.com/NFT-Lab/ERC721-marketplace-frontend][implementazione del frontend]] è stato deciso di salvare i
+    metadati tramite una struttura JSON su ipfs.
+
+** safeTransferFrom
+   viene anche ridefnia la modalità di trasferimento di NFT
+   disponibile ai wallet, aggiungendo all'implementazione standard i
+   ltracciamento della storia del token.
+
+** Categorie
+   Prendendo spunto dalle funzioni di ERC721Enumerable sono state
+   implementate anche le funzioni di iterazione per categoria
+   (~NFTLabStore:238:5 - NFTLabStore:283:5~):
+   #+BEGIN_SRC solidity
+     /* TOTAL SUPPLY */
+
+     /**
+      ,* @dev returns the amount of nfts tagged as image
+      ,*/
+     function image_totalSupply() external view returns (uint256);
+
+     /**
+      ,* @dev returns the amount of nfts tagged as music
+      ,*/
+     function music_totalSupply() external view returns (uint256);
+
+     /**
+      ,* @dev returns the amount of nfts tagged as video
+      ,*/
+     function video_totalSupply() external view returns (uint256);
+
+     /* ITERATE */
+
+     /**
+      ,* @dev returns the nft tagged as image at index `index` inside the map
+      ,* @param index the index of the image to get
+      ,*/
+     function getImageAt(uint256 index) external view returns (uint256);
+
+     /**
+      ,* @dev returns the nft tagged as music at index `index` inside the map
+      ,* @param index the index of the image to get
+      ,*/
+     function getMusicAt(uint256 index) external view returns (uint256);
+
+     /**
+      ,* @dev returns the nft tagged as video at index `index` inside the map
+      ,* @param index the index of the video to get
+      ,*/
+     function getVideoAt(uint256 index) external view returns (uint256);
+   #+END_SRC
+
+   Il primo set permette di identificare il numero di NFT appartenenti
+   ad una detereminata categoria, mentre il secondo set permette di
+   avere l'id del token ad un certo ~index~ della categoria. È stato
+   scelto di utilizzare un set fisso di categorie per non far lievitare
+   troppo i costi di minting e di avere una ricerca efficente
+   all'interno della blockchain.
+

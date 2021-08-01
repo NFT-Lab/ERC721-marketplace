@@ -20,6 +20,10 @@ The main component is the Marketplace, written in `contracts/Marketplace.sol`. I
     </a>
 </center>
 
+### Documentation
+
+More information about the 2 main contracts can be found inside of [docs/NFTLabStore.org](docs/NFTLabStore.org) and [docs/Marketplace.org](docs/Marketplace.org) files.
+
 ## Usage
 
 ```bash
@@ -61,7 +65,3 @@ npm run prettify
 ```
 
 and your code will automatically be formatted, so that everything is uniform. After that commit and make your pull request
-
-## Documentation
-
-Documentation for architectural and implementation decisions can be found on the [wiki](/wiki) page

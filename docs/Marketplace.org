@@ -1,0 +1,153 @@
+#+TITLE: Architettura Marketplace
+#+AUTHOR: Luca Zaninotto
+* A cosa server il Marketplace
+  Consente di aprire /trade/ per un particolare NFT, di cancellarli
+  qualora non si voglia più vendere o eseguirli, così da ricevere il
+  token in cambio del prezzo fissato.
+** Protocollo
+*** 1. minting dell'NFT
+    Per poter vendere un NFT è necessario che questo sia registrato
+    nello store utilizzato dal marketplace. Per fare ciò bisogna
+    richiamare da wallet la funzione di minting, come descritto in
+    [[file:NFTLabStore.org][NFTLabStore]].
+
+*** 2. Accedere allo store
+    tramite la funzione ~getStorage()~ viene ritornato l'indirizzo
+    dello store utilizzato dal marketplace.
+    
+*** 3. ~openTrade()~
+
+    #+BEGIN_SRC solidity
+      /**
+       ,* @dev Opens a new trade. Puts _item in escrow.
+       ,* @param _item The id for the item to trade.
+       ,* @param _price The amount of currency for which to trade the item.
+       ,*/
+      function openTrade(uint256 _item, uint256 _price) external virtual {
+	  tokenHandler._marketTransfer(msg.sender, address(this), _item);
+	  tradeCounter.increment();
+	  trades[tradeCounter.current()] = Trade({
+	      poster: payable(msg.sender),
+	      item: _item,
+	      price: _price,
+	      status: "Open"
+	      });
+	  addressToTrades[msg.sender].push(tradeCounter.current());
+	  nftToActivetrade[_item] = tradeCounter.current();
+	  emit TradeStatusChange(tradeCounter.current(), "Open");
+      }
+
+    #+END_SRC
+
+    richiamando la funzione ~openTrade~ è possibile aprire una
+    compravendita per un token nello store, trasferendone la proprietà
+    allo store, impedendo così al proprietario originale di aprire una
+    compravendita per un NFT che non possiede o aprire una
+    compravendita e poi passare la proprietà del token ad un account
+    amico per evitare di cedere il token al momento dell'esecuzione
+    della stessa.
+
+*** 4a. ~executeTrade()~
+
+    #+BEGIN_SRC solidity
+      /**
+       ,* @dev Executes a trade. Must have approved this contract to transfer the
+       ,* amount of currency specified to the poster. Transfers ownership of the
+       ,* item to the filler.
+       ,* @param _trade The id of an existing trade
+       ,*/
+      function executeTrade(uint256 _trade) external payable virtual {
+	  Trade memory trade = trades[_trade];
+	  _checkPayment(msg.value, trade.price);
+	  require(trade.status == "Open", "Trade is not open");
+	  bool sent = _pay(msg.sender, trade.poster, trade.price);
+	  require(sent, "Failed to send eth to pay the art");
+	  tokenHandler._marketTransfer(address(this), msg.sender, trade.item);
+	  delete nftToActivetrade[trade.item];
+	  trades[_trade].status = "Executed";
+	  emit TradeStatusChange(_trade, "Executed");
+      }
+
+    #+END_SRC
+
+    Scenario principale: qualcuno vuole comprare l'NFT in
+    vendita. Basta allora chiamare la funzione ~executeTrade(uint256)~
+    con l'id della compravendita aperta, pagando la quantità
+    necessaria per l'esecuzione (o in ether o tramite ~approve~ degli
+    [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol][ERC20]]), in questo modo una volta avvenuto il trasferimento di
+    denaro il token verrà inviato al chiamante.
+
+    La funzione pay si occupa del trasferimento di denaro, di default
+    è implementata per utilizzare gli ether, ma è possibile ridefnirla
+    per utilizzare qualsiasi altro metodo di pagamento (ad esempio gli
+    ERC20 in [[https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol][ERC20Marketplace]]).
+
+    ~_checkpayment~ controlla che la somma inviata sia sufficente a
+    coprire il pagamento.
+
+*** 4b. ~cancelTrade()~
+
+    #+BEGIN_SRC solidity
+      /**
+       ,* @dev Cancels a trade made by the poster, the NFT returns to the
+       ,* poster.
+       ,* @param _trade The trade to be cancelled.
+       ,*/
+      function cancelTrade(uint256 _trade) external virtual {
+	  Trade memory trade = trades[_trade];
+	  require(
+	      msg.sender == trade.poster,
+	      "Trade can be cancelled only by poster."
+	      );
+	  require(trade.status == "Open", "Trade is not open");
+	  tokenHandler._marketTransfer(address(this), trade.poster, trade.item);
+	  trades[_trade].status = "Cancelled";
+	  delete nftToActivetrade[trade.item];
+	  emit TradeStatusChange(_trade, "Cancelled");
+      }
+    #+END_SRC
+    
+    Scenario alternativo: Chi ha aperto la compravendita decide di
+    cambiare idea, in questo caso è possbile chiuderla e riottenere il
+    proprio token senza doverne ripagare il prezzo intero allo store:
+    è necessario chiamare ~cancelTrade(uint256)~ con l'id della
+    compravendita precedentemente aperta.
+
+* NFTLabStoreMarketplaceVariant
+  
+  È di fatto NFTLabStore, ma aggiunge una funzione permette
+  all'/owner/ del contratto (ovvero il marketplace) di forzare il
+  trasferimento del token indicato, così da evitare una chiamata al
+  wallet proprietario per autorizzare il marketplace al trasferimento
+  all'apertura di una compravendita, rifucendo i costi di chiamata
+  senza comprometterne la sicurezza (di fatto è proprio chiamabile
+  solamente dal marketplace).
+  
+  #+BEGIN_SRC solidity
+    /**
+     ,* @dev Forcefully transfers an NFT from `from` to `to`. since
+     ,* does not use the safe transfer is accessible only by the owner
+     ,* (The marketplace). The history is preserved and recorded.
+     ,* @param from the address who currently owns the token
+     ,* @param to the address who will own the token
+     ,* @param tokenId the tokenId to be transferred
+     ,*/
+    function _marketTransfer(
+	address from,
+	address to,
+	uint256 tokenId
+	) public onlyOwner {
+	super._transfer(from, to, tokenId);
+	_recordHistory(from, to, tokenId);
+	emit Transferred(tokenId, from, to, block.timestamp);
+    }
+
+  #+END_SRC
+
+* Implementazioni
+  [[file:../contracts/ETHMarketplace.sol][ETHMarketplace]] implementa lo store utilizzando come metodo di
+  pagamento ethereum ereditando il contratto principale
+  [[file:../contracts/Marketplace.sol][Marketplace]]. [[file:~/uni/synclab/eth-markt/contracts/ERC20Marketplace.sol][ERC20Marketplace]] Implementa invece il meccanismo di
+  cambio di valuta, ricevendo da costruttore il contratto che
+  implementa lo standard ERC20, così da reimplementare le funzioni di
+  pagamento e utilizzare come valuta il contratto designato.
