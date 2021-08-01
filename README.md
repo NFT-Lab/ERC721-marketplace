@@ -64,4 +64,4 @@ and your code will automatically be formatted, so that everything is uniform. Af
 
 ## Documentation
 
-Documentation for architectural and implementation decisions can be found on the [wiki](/wiki) page
+Documentation for architectural and implementation decisions can be found inside of the [docs](./docs) folder.
