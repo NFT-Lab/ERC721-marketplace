@@ -147,7 +147,7 @@
 * Implementazioni
   [[file:../contracts/ETHMarketplace.sol][ETHMarketplace]] implementa lo store utilizzando come metodo di
   pagamento ethereum, di fatto semplicemente ereditando il contratto
-  principale [[file:../contracts/Marketplace.sol][Marketplace]]. [[file:../contracts/ERC20Marketplace][ERC20Marketplace.sol]] Implementa invece il
+  principale [[file:../contracts/Marketplace.sol][Marketplace]]. [[file:~/uni/synclab/eth-markt/contracts/ERC20Marketplace.sol][ERC20Marketplace]] Implementa invece il
   meccanismo di cambio di valuta, ricevendo da costruttore il
   contratto che implementa lo standard ERC20, così da reimplementare
   le funzioni di pagamento e utilizzare come valuta il contratto
